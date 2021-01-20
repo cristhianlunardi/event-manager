@@ -16,14 +16,7 @@ class DependencyController extends Controller
     {
         $dependencies = Dependency::orderBy('name', 'asc')->get();
 
-        $result = array();
-
-        foreach($dependencies as $dependency)
-        {
-            array_push($result, $dependency->name);
-        }
-
-        return $result;
+        return $dependencies;
     }
 
     /**
@@ -44,7 +37,15 @@ class DependencyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => ['bail', 'required', 'max:255'],
+        ]);
+
+        $dependency = new Dependency();
+        $dependency->name = $request->name;
+        $dependency->save();
+
+        return $dependency;
     }
 
     /**
@@ -55,7 +56,9 @@ class DependencyController extends Controller
      */
     public function show($id)
     {
-        //
+        $dependency = Dependency::where('_id', $id)->get();
+
+        return $dependency;
     }
 
     /**
@@ -78,7 +81,11 @@ class DependencyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $dependency = Dependency::find($id);
+        
+        $dependency->name = $request->name;
+        $dependency->save();
+        return $dependency;
     }
 
     /**
@@ -89,6 +96,10 @@ class DependencyController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $dependency = Dependency::find($id);
+
+        $dependency->delete();
+
+        return $dependency;
     }
 }
