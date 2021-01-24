@@ -19,3 +19,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::resource('dependencies', \App\Http\Controllers\DependencyController::class);
+
+Route::post('login', [\App\Http\Controllers\JwtAuthController::class, 'login']);
+Route::post('register', [\App\Http\Controllers\JwtAuthController::class, 'register']);
+
+Route::group(['middleware' => 'auth.jwt'], function () {
+    Route::get('logout', [\App\Http\Controllers\JwtAuthController::class, 'logout']);
+    Route::get('user-info', [\App\Http\Controllers\JwtAuthController::class, 'getUser']);
+});
