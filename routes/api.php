@@ -18,12 +18,21 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::delete('/dependencies/delete-many', [\App\Http\Controllers\DependencyController::class, 'destroyMany']);
 Route::resource('dependencies', \App\Http\Controllers\DependencyController::class);
 
-Route::post('login', [\App\Http\Controllers\JwtAuthController::class, 'login']);
-Route::post('register', [\App\Http\Controllers\JwtAuthController::class, 'register']);
-
-Route::group(['middleware' => 'auth.jwt'], function () {
-    Route::get('logout', [\App\Http\Controllers\JwtAuthController::class, 'logout']);
-    Route::get('user-info', [\App\Http\Controllers\JwtAuthController::class, 'getUser']);
-});
+Route::group(
+    [
+        'middleware' => 'api',
+        'prefix' => 'user'
+    ],
+    function ()
+    {
+        Route::post('login', [\App\Http\Controllers\JwtAuthController::class, 'login']);
+        Route::post('register', [\App\Http\Controllers\JwtAuthController::class, 'register']);
+        Route::post('logout', [\App\Http\Controllers\JwtAuthController::class, 'logout']);
+        Route::post('user-info', [\App\Http\Controllers\JwtAuthController::class, 'getUser']);
+        Route::post('refresh', [\App\Http\Controllers\JwtAuthController::class, 'refresh']);
+        Route::post('me', [\App\Http\Controllers\JwtAuthController::class, 'me']);
+    }
+);

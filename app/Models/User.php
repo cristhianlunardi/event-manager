@@ -22,10 +22,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     use Authenticatable, Authorizable, CanResetPassword, Notifiable, HasFactory;*/
     //use HasFactory, Notifiable;
 
-use Illuminate\Notifications\Notifiable;
-use Jenssegers\Mongodb\Auth\User as Authenticatable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Tymon\JWTAuth\Contracts\JWTSubject;
+    use Tymon\JWTAuth\Contracts\JWTSubject;
+    use Illuminate\Notifications\Notifiable;
+    use Jenssegers\Mongodb\Auth\User as Authenticatable;
+    use Illuminate\Database\Eloquent\Factories\HasFactory;
 
     class User extends Authenticatable implements JWTSubject
     {
