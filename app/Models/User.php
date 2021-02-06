@@ -81,4 +81,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
     {
         return [];
     }
+
+    /*public function SetPasswordAttribute( $password )
+    {
+        $this->attributes['password'] = bcrypt($password);
+    }*/
 }

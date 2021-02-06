@@ -55,7 +55,7 @@ class JwtAuthController extends Controller
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->password = bcrypt($request->password);
+        $user->password = $request->password;
         $user->save();
 
         /*if ($this->token)
@@ -145,6 +145,16 @@ class JwtAuthController extends Controller
         $user = JWTAuth::authenticate($request->token);
 
         return response()->json(['user' => $user]);
+    }
+
+    public function all()
+    {
+        /*$dependencies = User::orderBy('name', 'asc')->get();
+
+        return response()->json( [
+            'data' => $dependencies,
+        ], 200);*/
+        return true;
     }
 
     protected function respondWithToken($token)

@@ -16,19 +16,9 @@ class DependencyController extends Controller
     {
         $dependencies = Dependency::orderBy('name', 'asc')->get();
 
-        return response() -> json( [
+        return response()->json( [
             'data' => $dependencies,
         ], 200);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -47,7 +37,7 @@ class DependencyController extends Controller
         $dependency->name = $request->name;
         $dependency->save();
 
-        return response() -> json( [
+        return response()->json( [
             'message' => 'Dependency created succesfully.',
             'data' => $dependency,
         ], 200);
@@ -63,20 +53,9 @@ class DependencyController extends Controller
     {
         $dependency = Dependency::where( '_id', $id )->get();
 
-        return response() -> json( [
+        return response()->json( [
             'data' => $dependency
         ], 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
     }
 
     /**

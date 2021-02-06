@@ -21,6 +21,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::delete('/dependencies/delete-many', [\App\Http\Controllers\DependencyController::class, 'destroyMany']);
 Route::resource('dependencies', \App\Http\Controllers\DependencyController::class);
 
+Route::resource('templates', \App\Http\Controllers\DependencyController::class);
+
 Route::group(
     [
         'middleware' => 'api',
@@ -34,5 +36,6 @@ Route::group(
         Route::post('user-info', [\App\Http\Controllers\JwtAuthController::class, 'getUser']);
         Route::post('refresh', [\App\Http\Controllers\JwtAuthController::class, 'refresh']);
         Route::post('me', [\App\Http\Controllers\JwtAuthController::class, 'me']);
+        Route::get('all', [\App\Http\Controllers\JwtAuthController::class, 'all']);
     }
 );
