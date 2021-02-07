@@ -30,7 +30,17 @@ class EventTypeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => [ 'required' ],
+            'fields' => [ 'required' ],
+        ]);
+
+        $eventType = new EventType();
+        $eventType->name = $request->name;
+        $eventType->fields = $request->fields;
+        $eventType->save();
+
+        return new EventTypeResource($eventType);
     }
 
     /**
@@ -41,22 +51,13 @@ class EventTypeController extends Controller
      */
     public function show(EventType $eventType, $id)
     {
-        /*return new EventTypeResource(EventType::find($id));
-       
-       
-       
-        echo 'hello world';
-        echo $eventType;
-        echo $id;*/
-        /*$validated = $eventType->validate([
-            '_id' => [ 'required' ]
-        ]);
+        $eventType = EventType::find($id);
+        if ($eventType == null)
+        {
+            return response()->json($this->handleErrors('notfound'), 404);
+        }
 
-        $result = Dependency::where( '_id', $id )->get();
-
-        return response()->json( [
-            'data' => $result
-        ], 200);*/
+        return new EventTypeResource($eventType);
     }
 
     /**
@@ -80,5 +81,24 @@ class EventTypeController extends Controller
     public function destroy(EventType $eventType)
     {
         //
+    }
+
+    public function handleErrors( $error )
+    {
+        switch ( $error )
+        {
+            case 'notfound':
+            {
+                return [
+                    'message' => 'The given data was invalid.',
+                    'errors' =>
+                        [
+                            'id' => 'There isn\'t a EventType associated with that id.',
+                        ]
+                ];
+
+                break;
+            }
+        }
     }
 }
