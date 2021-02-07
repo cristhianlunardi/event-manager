@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTemplatesTable extends Migration
+class CreateEventTypesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,11 @@ class CreateTemplatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('templates', function (Blueprint $table) {
+        Schema::create('event_types', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('name');
+            // This 'object' thing is a LIE - Still need to learn how to deal with this complex objects array
+            $table->object('fields');
         });
     }
 
@@ -26,6 +28,6 @@ class CreateTemplatesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('templates');
+        Schema::dropIfExists('event_types');
     }
 }

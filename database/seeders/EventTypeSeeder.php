@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class TemplateSeeder extends Seeder
+class EventTypeSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class TemplateSeeder extends Seeder
      */
     public function run()
     {
-        //
+        \App\Models\EventType::factory(10)->create();
     }
 }

@@ -18,10 +18,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::delete('/dependencies/delete-many', [\App\Http\Controllers\DependencyController::class, 'destroyMany']);
-Route::resource('dependencies', \App\Http\Controllers\DependencyController::class);
+Route::apiResources([
+    'dependencies' => \App\Http\Controllers\DependencyController::class,
+    'eventtypes' => \App\Http\Controllers\EventTypeController::class,
+]);
 
-Route::resource('templates', \App\Http\Controllers\DependencyController::class);
+Route::delete('/dependencies/delete-many', [\App\Http\Controllers\DependencyController::class, 'destroyMany']);
 
 Route::group(
     [

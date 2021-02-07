@@ -5,16 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
 
-class Template extends Model
+class EventType extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'startDate',
-        'endDate',
-        'dependency',
-        'ownerId',
-        'extraFields' => [],
+        'name',
     ];
+
+    /*protected $casts = [
+        'fields' => 'object'
+    ];*/
 }

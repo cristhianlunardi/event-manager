@@ -81,7 +81,7 @@ class DependencyController extends Controller
         $dependency->name = $request->name;
         $dependency->save();
 
-        return response() -> json( [
+        return response()->json( [
             'message' => 'Dependency updated succesfully.',
             'data' => $dependency,
         ], 200);
