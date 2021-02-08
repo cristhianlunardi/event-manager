@@ -15,7 +15,8 @@ class EventTypeController extends Controller
      */
     public function index()
     {
-        $eventTypes = EventType::orderBy('name', 'asc')->get();
+        //$eventTypes = EventType::orderBy('name', 'asc')->get();
+        $eventTypes = EventType::all();
 
         return response()->json( [
             'data' => $eventTypes,

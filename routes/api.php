@@ -23,8 +23,6 @@ Route::apiResources([
     'eventtypes' => \App\Http\Controllers\EventTypeController::class,
 ]);
 
-Route::delete('/dependencies/delete-many', [\App\Http\Controllers\DependencyController::class, 'destroyMany']);
-
 Route::group(
     [
         'middleware' => 'api',

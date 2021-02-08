@@ -93,38 +93,24 @@ class DependencyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy( $id )
+    public function destroy(Request $request)
     {
-        $dependency = Dependency::find( $id );
-
-        if ( $dependency == null )
-        {
-            return response()->json( $this->handleErrors( 'notfound' ), 404 );
-        }
-
-        $dependency->delete();
-
-        return response()->json( [ 'message' => 'Dependency deleted succesfully.' ], 200);
-    }
-
-    public function destroyMany( Request $request )
-	{
         $validated = $request->validate([
             'data' => [ 'required' ]
         ]);
 
         $data = $request->data;
-        
-		foreach ($data as $id) 
+
+        foreach ($data as $id) 
 		{
             if (array_key_exists('_id', $id))
             {
                 Dependency::where('_id', $id['_id'])->delete();
             }
         }
-        
-		return response()->json( [ 'message' => 'Dependencies deleted succesfully.' ], 200);
-	}
+
+        return response()->json(['message' => 'Dependencies deleted succesfully.'], 200);
+    }
 
     public function handleErrors( $error )
     {
