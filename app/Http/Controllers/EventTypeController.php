@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\EventType;
 use Illuminate\Http\Request;
 use App\Http\Resources\EventTypeResource;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EventTypeController extends Controller
 {
@@ -68,9 +69,32 @@ class EventTypeController extends Controller
      * @param  \App\Models\EventType  $eventType
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, EventType $eventType)
+    public function update(Request $request, $id)
     {
-        //
+        $eventType = EventType::find($id);
+
+        if ($eventType == null)
+        {
+            return response()->json($this->handleErrors('notfound'), 404);
+        }
+
+        $validated = $request->validate([
+            'data' => [ 'required' ],
+            'data.name' => [ 'required' ],
+            'data.fields' => [ 'required' ],
+        ]);
+
+        $data = $request->data;
+
+        $eventType->name = $data['name'];
+        $eventType->fields = $data['fields'];
+
+        $eventType->save();
+
+        return response()->json( [
+            'message' => 'EventType updated succesfully.',
+            'data' => $eventType,
+        ], 200);
     }
 
     /**
@@ -79,9 +103,23 @@ class EventTypeController extends Controller
      * @param  \App\Models\EventType  $eventType
      * @return \Illuminate\Http\Response
      */
-    public function destroy(EventType $eventType)
+    public function destroy(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'data' => [ 'required' ]
+        ]);
+
+        $data = $request->data;
+
+        foreach ($data as $id) 
+		{
+            if (array_key_exists('_id', $id))
+            {
+                EventType::where('_id', $id['_id'])->delete();
+            }
+        }
+
+        return response()->json(['message' => 'EventTypes deleted succesfully.'], 200);
     }
 
     public function handleErrors( $error )

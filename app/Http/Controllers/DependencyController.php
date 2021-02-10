@@ -65,13 +65,13 @@ class DependencyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update( Request $request, $id )
+    public function update(Request $request, $id)
     {
-        $dependency = Dependency::find( $id );
+        $dependency = Dependency::find($id);
 
-        if ( $dependency == null )
+        if ($dependency == null)
         {
-            return response()->json( $this->handleErrors( 'notfound' ), 404 );
+            return response()->json($this->handleErrors('notfound'), 404);
         }
 
         $validated = $request->validate([

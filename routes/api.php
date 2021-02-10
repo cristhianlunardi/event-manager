@@ -21,7 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::apiResources([
     'dependencies' => \App\Http\Controllers\DependencyController::class,
     'eventtypes' => \App\Http\Controllers\EventTypeController::class,
-]);
+]); 
 
 Route::group(
     [
