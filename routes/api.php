@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware'=>'auth:api'], function() {
     Route::post('testOauth', [\App\Http\Controllers\AuthController::class, 'testOauth']);
-    Route::post('getUsers', [\App\Http\Controllers\UserController::class, 'getUsers']);
+    Route::get('getUsers', [\App\Http\Controllers\UserController::class, 'getUsers']);
 });
 
 Route::apiResources([
