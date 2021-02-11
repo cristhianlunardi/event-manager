@@ -30,7 +30,7 @@ class DependencyController extends Controller
     public function store( Request $request )
     {
         $validated = $request->validate([
-            'name' => [ 'required' ],
+            'name' => 'required',
         ]);
 
         $dependency = new Dependency();
@@ -49,7 +49,7 @@ class DependencyController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show( $id )
+    public function show($id)
     {
         $dependency = Dependency::where( '_id', $id )->get();
 
@@ -75,7 +75,7 @@ class DependencyController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => [ 'required' ],
+            'name' => 'required',
         ]);
 
         $dependency->name = $request->name;
@@ -96,7 +96,7 @@ class DependencyController extends Controller
     public function destroy(Request $request)
     {
         $validated = $request->validate([
-            'data' => [ 'required' ]
+            'data' => 'required'
         ]);
 
         $data = $request->data;

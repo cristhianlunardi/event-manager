@@ -33,8 +33,8 @@ class EventTypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => [ 'required' ],
-            'fields' => [ 'required' ],
+            'name' => 'required',
+            'fields' => 'required',
         ]);
 
         $eventType = new EventType();
@@ -79,9 +79,9 @@ class EventTypeController extends Controller
         }
 
         $validated = $request->validate([
-            'data' => [ 'required' ],
-            'data.name' => [ 'required' ],
-            'data.fields' => [ 'required' ],
+            'data' => 'required',
+            'data.name' => 'required',
+            'data.fields' => 'required',
         ]);
 
         $data = $request->data;
@@ -106,7 +106,7 @@ class EventTypeController extends Controller
     public function destroy(Request $request)
     {
         $validated = $request->validate([
-            'data' => [ 'required' ]
+            'data' => 'required'
         ]);
 
         $data = $request->data;

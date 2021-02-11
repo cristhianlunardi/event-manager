@@ -2,39 +2,22 @@
 
 namespace App\Models;
 
-//use Illuminate\Foundation\Auth\User as Authenticatable;
-/*use Tymon\JWTAuth\Contracts\JWTSubject;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Auth\Authenticatable;
-use Illuminate\Auth\Passwords\CanResetPassword;
-use Illuminate\Foundation\Auth\Access\Authorizable;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-*/
-/*class User extends \Jenssegers\Mongodb\Eloquent\Model implements
-    AuthenticatableContract,
-    AuthorizableContract,
-    CanResetPasswordContract,
-    JWTSubject
+use Jenssegers\Mongodb\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Passport\HasApiTokens;
+    
+class User extends Authenticatable
 {
-    use Authenticatable, Authorizable, CanResetPassword, Notifiable, HasFactory;*/
-    //use HasFactory, Notifiable;
-
-    use Tymon\JWTAuth\Contracts\JWTSubject;
-    use Illuminate\Notifications\Notifiable;
-    use Jenssegers\Mongodb\Auth\User as Authenticatable;
-    use Illuminate\Database\Eloquent\Factories\HasFactory;
-
-    class User extends Authenticatable implements JWTSubject
-    {
-        use Notifiable, HasFactory;
+    use HasApiTokens, HasFactory, Notifiable;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
+
+    protected $collection = 'users';
+
     protected $fillable = [
         'name',
         'email',
@@ -82,8 +65,18 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
         return [];
     }
 
-    /*public function SetPasswordAttribute( $password )
+    public function setPasswordAttribute( $password )
     {
         $this->attributes['password'] = bcrypt($password);
-    }*/
+    }
+
+    public function setEmailAttribute($email)
+    {
+        $this->attributes['email'] = strtolower($email);
+    }
+
+    public function getEmailAttribute($email)
+    {
+        return strtolower($email);
+    }
 }

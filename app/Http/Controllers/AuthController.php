@@ -2,26 +2,12 @@
 
 namespace App\Http\Controllers;
 
-//use Illuminate\Http\Request;
-/*use JWTAuth;
-use Validator;
-use AppUser;
-use Illuminate/Http/Request;
-use App/Http/Requests/RegisterAuthRequest;
-use TymonJWTAuthExceptionsJWTException;
-use SymfonyComponentHttpFoundationResponse;*/
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Illuminate\Http\Response;
-
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
-class JwtAuthController extends Controller
+class AuthController extends Controller
 {
     public $token = true;
 
@@ -35,22 +21,31 @@ class JwtAuthController extends Controller
         $this->middleware('auth:api', ['except' => ['register', 'login']]);
     }
 
+    public function testOauth()
+    {
+        $user = Auth::user();
+
+        return response()->json([
+            'message' => 'Success',
+            'data' => [
+                'user' => $user
+            ]
+        ], 200);
+    }
+
     public function register(Request $request)
     {
-        $request['email'] = strtolower($request['email']);
-
-        $validator = Validator::make($request->all(), 
-        [ 
-            'name' => 'required',
-            'email' => 'bail|required|email|unique:users',
-            'password' => 'required',  
-            'c_password' => 'required|same:password', 
-        ]);  
-
-        if ($validator->fails())
-        {  
-            return response()->json(['error'=>$validator->errors()], 401); 
+        if ($request['email'] != null)
+        {
+            $request['email'] = strtolower($request['email']);
         }
+
+        $request->validate([
+            'name' => 'required',
+            'email' => 'bail | required | email | unique:users',
+            'password' => 'required | min:8',
+            'c_password' => 'required | same:password',
+        ]);
 
         $user = new User();
         $user->name = $request->name;
@@ -58,15 +53,15 @@ class JwtAuthController extends Controller
         $user->password = $request->password;
         $user->save();
 
-        /*if ($this->token)
-        {
-            return $this->login($request);
-        }*/
+        $token = $user->createToken("EventManager")->accessToken;
 
         return response()->json([
-            'success' => true,
-            'data' => $user
-        ], Response::HTTP_OK);
+            'message' => 'User created succesfully.',
+            'data' => [
+                'token' => $token,
+                'user' => $user
+            ]
+        ], 200);
     }
 
     /*public function login(Request $request)
