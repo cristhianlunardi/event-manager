@@ -40,7 +40,7 @@ Route::group(
         Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::post('user-info', [\App\Http\Controllers\AuthController::class, 'getUser']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
-        Route::post('me', [\App\Http\Controllers\AuthController::class, 'me']);
-        Route::get('all', [\App\Http\Controllers\AuthController::class, 'all']);
+        Route::delete('delete', [\App\Http\Controllers\AuthController::class, 'delete']);
+        Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     }
 );

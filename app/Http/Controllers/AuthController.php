@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
-class AuthController extends Controller
+class AuthController extends ApiController
 {
     public $token = true;
 
@@ -64,25 +64,6 @@ class AuthController extends Controller
         ], 200);
     }
 
-    /*public function login(Request $request)
-    {
-        $input = $request->only('email', 'password');
-        $jwt_token = null;
-
-        if (!$jwt_token = JWTAuth::attempt($input))
-        {
-            return response()->json([
-                'success' => false,
-                'message' => 'Invalid Email or Password',
-            ], Response::HTTP_UNAUTHORIZED);
-        }
-
-        return response()->json([
-            'success' => true,
-            'token' => $jwt_token,
-        ]);
-    }*/
-
     public function login(Request $request)
     {
         $request['email'] = strtolower($request['email']);
@@ -107,49 +88,34 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function logout(Request $request)
-    {
-        $this->validate($request, [
-            'token' => 'required'
-        ]);
-
-        try
-        {
-            JWTAuth::invalidate($request->token);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'User logged out successfully'
-            ]);
-        }
-        catch (JWTException $exception)
-        {
-            return response()->json([
-                'success' => false,
-                'message' => 'Sorry, the user cannot be logged out'
-            ], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
     public function getUser(Request $request)
     {
-        $this->validate($request, [
-            'token' => 'required'
-        ]);
+        $user = Auth::user();
 
-        $user = JWTAuth::authenticate($request->token);
+        $data = [
+            'user' => $user
+        ];
 
-        return response()->json(['user' => $user]);
+        return $this->sendResponse($data, "Successfully handled request");
     }
 
-    public function all()
+    public function delete(Request $request)
     {
-        /*$dependencies = User::orderBy('name', 'asc')->get();
+        $validated = $request->validate([
+            'data' => 'required'
+        ]);
 
-        return response()->json( [
-            'data' => $dependencies,
-        ], 200);*/
-        return true;
+        $data = $request->data;
+
+        foreach ($data as $id) 
+		{
+            if (array_key_exists('_id', $id))
+            {
+                User::where('_id', $id['_id'])->delete();
+            }
+        }
+
+        return response()->json(['message' => 'Users deleted succesfully.'], 200);
     }
 
     protected function respondWithToken($token)
@@ -159,5 +125,15 @@ class AuthController extends Controller
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
+    }
+
+    public function logout()
+    {
+        if (Auth::check()) {
+            Auth::user()->token()->revoke();
+            return $this->sendResponse([], "Successfully handled request");
+        }else{
+            return $this->sendResponse([ "The user is not logged in" ], "Not logged in", 500);
+        }
     }
 }
