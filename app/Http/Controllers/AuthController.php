@@ -36,34 +36,17 @@ class AuthController extends ApiController
 
     public function register(RegisterUser $request)
     {
-        echo $request;
-        /*if ($request['email'] != null)
+        // email must be "LOWERCASE" - Front-end duty
+        $result = [];
+
+        foreach ($request->data as $user)
         {
-            $request['email'] = strtolower($request['email']);
+            $newUser = User::create($user);
+            $token = $newUser->createToken("EventManager")->accessToken;
+            array_push($result, array_merge([ "token" => $token ], $newUser->toArray()));
         }
 
-        $request->validate([
-            'name' => 'required',
-            'email' => 'bail | required | email | unique:users',
-            'password' => 'required | min:8',
-            'c_password' => 'required | same:password',
-        ]);
-
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = $request->password;
-        $user->save();
-
-        $token = $user->createToken("EventManager")->accessToken;
-
-        return response()->json([
-            'message' => 'User created succesfully.',
-            'data' => [
-                'token' => $token,
-                'user' => $user
-            ]
-        ], 200);*/
+        return $this->sendResponse($result, "Successfully handled request");
     }
 
     public function getUser(Request $request)
