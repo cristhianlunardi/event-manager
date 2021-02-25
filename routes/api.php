@@ -26,6 +26,7 @@ Route::group(['middleware'=>'auth:api'], function() {
 Route::apiResources([
     'dependencies' => \App\Http\Controllers\DependencyController::class,
     'eventtypes' => \App\Http\Controllers\EventTypeController::class,
+    'event' => \App\Http\Controllers\EventController::class,
 ]); 
 
 Route::group(
@@ -37,10 +38,10 @@ Route::group(
     {
         Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
         Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
+        Route::post('update/{id}', [\App\Http\Controllers\AuthController::class, 'update']);
         Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::post('user-info', [\App\Http\Controllers\AuthController::class, 'getUser']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
         Route::delete('delete', [\App\Http\Controllers\AuthController::class, 'delete']);
-        Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     }
 );

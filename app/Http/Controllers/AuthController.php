@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Requests\RegisterUser;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 
@@ -33,9 +34,10 @@ class AuthController extends ApiController
         ], 200);
     }
 
-    public function register(Request $request)
+    public function register(RegisterUser $request)
     {
-        if ($request['email'] != null)
+        echo $request;
+        /*if ($request['email'] != null)
         {
             $request['email'] = strtolower($request['email']);
         }
@@ -61,31 +63,7 @@ class AuthController extends ApiController
                 'token' => $token,
                 'user' => $user
             ]
-        ], 200);
-    }
-
-    public function login(Request $request)
-    {
-        $request['email'] = strtolower($request['email']);
-
-        $validator = Validator::make($request->all(), 
-        [ 
-            'email' => 'bail|required|email',
-            'password' => 'required',  
-        ]);
-
-        if ($validator->fails())
-        {  
-            return response()->json(['error'=>$validator->errors()], 401); 
-        }
-
-        $credentials = request(['email', 'password']);
-
-        if (! $token = auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        return $this->respondWithToken($token);
+        ], 200);*/
     }
 
     public function getUser(Request $request)
@@ -97,6 +75,36 @@ class AuthController extends ApiController
         ];
 
         return $this->sendResponse($data, "Successfully handled request");
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if ($user == null)
+        {
+            return response()->json($this->handleErrors('notfound'), 404);
+        }
+
+        $validated = $request->validate([
+            'data' => 'required',
+            'data._id' => 'required',
+            'data.name' => 'required',
+            'data.email' => 'required',
+        ]);
+
+        $data = $request->data;
+
+        $user->name = $data['name'];
+        $user->_id = $data['_id'];
+        $user->email = $data['email'];
+
+        $user->save();
+
+        return response()->json( [
+            'message' => 'EventType updated succesfully.',
+            'data' => $user,
+        ], 200);
     }
 
     public function delete(Request $request)
@@ -134,6 +142,25 @@ class AuthController extends ApiController
             return $this->sendResponse([], "Successfully handled request");
         }else{
             return $this->sendResponse([ "The user is not logged in" ], "Not logged in", 500);
+        }
+    }
+
+    public function handleErrors( $error )
+    {
+        switch ( $error )
+        {
+            case 'notfound':
+            {
+                return [
+                    'message' => 'The given data was invalid.',
+                    'errors' =>
+                        [
+                            'id' => 'There isn\'t a User associated with that id.',
+                        ]
+                ];
+
+                break;
+            }
         }
     }
 }

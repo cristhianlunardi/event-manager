@@ -13,8 +13,4 @@ class EventType extends Model
         'name',
         'fields'
     ];
-
-    /*protected $casts = [
-        'fields' => 'object'
-    ];*/
 }
