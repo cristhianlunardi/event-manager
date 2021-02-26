@@ -42,8 +42,6 @@ Route::group(
         Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
         Route::get('self', [\App\Http\Controllers\AuthController::class, 'selfUser']);
         Route::get('all', [\App\Http\Controllers\UserController::class, 'getUsers']);
-
-
         Route::post('update', [\App\Http\Controllers\AuthController::class, 'update']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
     }

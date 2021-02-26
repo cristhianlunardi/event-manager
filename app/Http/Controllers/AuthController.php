@@ -53,6 +53,32 @@ class AuthController extends ApiController
         return $this->sendResponse($result, "Successfully handled request");
     }
 
+    public function deleteUsers(Request $request)
+    {
+        $validated = $request->validate([
+            'data' => 'required'
+        ]);
+
+        $data = $request->data;
+
+        foreach ($data as $id) 
+		{
+            if (array_key_exists('_id', $id))
+            {
+                User::where('_id', $id['_id'])->delete();
+            }
+        }
+
+        return response()->json(['message' => 'Users deleted succesfully.'], 200);
+    }
+
+    public function logout()
+    {
+        Auth::check();
+        Auth::user()->token()->revoke();
+        return $this->sendResponse([], "Successfully handled request (logout)");
+    }
+
     public function selfUser()
     {
         $user = Auth::user();
@@ -80,32 +106,6 @@ class AuthController extends ApiController
         }
 
         return response()->json(['message' => 'Users updated succesfully.'], 200);
-    }
-
-    public function deleteUsers(Request $request)
-    {
-        $validated = $request->validate([
-            'data' => 'required'
-        ]);
-
-        $data = $request->data;
-
-        foreach ($data as $id) 
-		{
-            if (array_key_exists('_id', $id))
-            {
-                User::where('_id', $id['_id'])->delete();
-            }
-        }
-
-        return response()->json(['message' => 'Users deleted succesfully.'], 200);
-    }
-
-    public function logout()
-    {
-        Auth::check();
-        Auth::user()->token()->revoke();
-        return $this->sendResponse([], "Successfully handled request (logout)");
     }
 
     protected function respondWithToken($token)
