@@ -24,7 +24,7 @@ class RegisterUser extends FormRequest
     public function rules()
     {
         return [
-            "data.*.email"  => "bail | required | email | unique:users",
+            "data.*.email"  => "bail | required | email",
             "data.*.password"  => "required | min:6",
             "data.*.c_password"  => "required | same:data.*.password",
             "data.*.fullName"  => "required",

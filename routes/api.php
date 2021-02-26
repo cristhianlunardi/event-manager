@@ -20,7 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::group(['middleware'=>'auth:api'], function() {
     Route::post('testOauth', [\App\Http\Controllers\AuthController::class, 'testOauth']);
-    Route::get('getUsers', [\App\Http\Controllers\UserController::class, 'getUsers']);
+    
 });
 
 Route::apiResources([
@@ -36,12 +36,15 @@ Route::group(
     ],
     function ()
     {
-        Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
         Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
-        Route::post('update/{id}', [\App\Http\Controllers\AuthController::class, 'update']);
-        Route::post('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
-        Route::post('user-info', [\App\Http\Controllers\AuthController::class, 'getUser']);
+        Route::delete('delete', [\App\Http\Controllers\AuthController::class, 'deleteUsers']);
+        Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+        Route::get('self', [\App\Http\Controllers\AuthController::class, 'selfUser']);
+        Route::get('all', [\App\Http\Controllers\UserController::class, 'getUsers']);
+
+
+        Route::post('update', [\App\Http\Controllers\AuthController::class, 'update']);
         Route::post('refresh', [\App\Http\Controllers\AuthController::class, 'refresh']);
-        Route::delete('delete', [\App\Http\Controllers\AuthController::class, 'delete']);
     }
 );

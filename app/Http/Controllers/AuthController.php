@@ -36,6 +36,10 @@ class AuthController extends ApiController
 
     public function register(RegisterUser $request)
     {
+        $validated = $request->validate([
+            'data.*.email' => 'unique:users'
+        ]);
+
         // email must be "LOWERCASE" - Front-end duty
         $result = [];
 
@@ -49,7 +53,7 @@ class AuthController extends ApiController
         return $this->sendResponse($result, "Successfully handled request");
     }
 
-    public function getUser(Request $request)
+    public function selfUser()
     {
         $user = Auth::user();
 
@@ -60,37 +64,25 @@ class AuthController extends ApiController
         return $this->sendResponse($data, "Successfully handled request");
     }
 
-    public function update(Request $request, $id)
+    public function update(RegisterUser $request)
     {
-        $user = User::find($id);
-
-        if ($user == null)
-        {
-            return response()->json($this->handleErrors('notfound'), 404);
-        }
-
-        $validated = $request->validate([
-            'data' => 'required',
-            'data._id' => 'required',
-            'data.name' => 'required',
-            'data.email' => 'required',
-        ]);
-
         $data = $request->data;
 
-        $user->name = $data['name'];
-        $user->_id = $data['_id'];
-        $user->email = $data['email'];
+        foreach ($data as $userUpdated) 
+		{
+            if (array_key_exists('_id', $userUpdated))
+            {
+                $id = $userUpdated['_id'];
+                unset($userUpdated['_id']);
 
-        $user->save();
+                $user = User::where('_id', $id)->update($userUpdated);
+            }
+        }
 
-        return response()->json( [
-            'message' => 'EventType updated succesfully.',
-            'data' => $user,
-        ], 200);
+        return response()->json(['message' => 'Users updated succesfully.'], 200);
     }
 
-    public function delete(Request $request)
+    public function deleteUsers(Request $request)
     {
         $validated = $request->validate([
             'data' => 'required'
@@ -109,6 +101,13 @@ class AuthController extends ApiController
         return response()->json(['message' => 'Users deleted succesfully.'], 200);
     }
 
+    public function logout()
+    {
+        Auth::check();
+        Auth::user()->token()->revoke();
+        return $this->sendResponse([], "Successfully handled request (logout)");
+    }
+
     protected function respondWithToken($token)
     {
         return response()->json([
@@ -116,16 +115,6 @@ class AuthController extends ApiController
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 60
         ]);
-    }
-
-    public function logout()
-    {
-        if (Auth::check()) {
-            Auth::user()->token()->revoke();
-            return $this->sendResponse([], "Successfully handled request");
-        }else{
-            return $this->sendResponse([ "The user is not logged in" ], "Not logged in", 500);
-        }
     }
 
     public function handleErrors( $error )
