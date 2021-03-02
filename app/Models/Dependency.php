@@ -11,5 +11,6 @@ class Dependency extends Model
 
     protected $fillable = [
         'name',
+        'key'
     ];
 }

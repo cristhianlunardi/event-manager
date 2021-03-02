@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Dependency;
 
-class DependencyController extends Controller
+class DependencyController extends ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -14,11 +19,10 @@ class DependencyController extends Controller
      */
     public function index()
     {
-        $dependencies = Dependency::orderBy('name', 'asc')->get();
+        //$dependencies = Dependency::orderBy('name', 'asc')->get();
+        $data = Dependency::all();
 
-        return response()->json( [
-            'data' => $dependencies,
-        ], 200);
+        return $this->sendResponse($data, "Successfully handled request");
     }
 
     /**
@@ -27,20 +31,24 @@ class DependencyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store( Request $request )
+    public function store(Request $request)
     {
+        // ! Bug 001 : - Need to verify if every "dependency key" is unique (inside the request)
         $validated = $request->validate([
-            'name' => 'required',
+            'data.*.key' => 'required | unique:dependencies',
+            'data.*.name' => 'required'
         ]);
 
-        $dependency = new Dependency();
-        $dependency->name = $request->name;
-        $dependency->save();
+        $result = [];
 
-        return response()->json( [
-            'message' => 'Dependency created succesfully.',
-            'data' => $dependency,
-        ], 200);
+        foreach ($request->data as $dependency)
+        {
+            $dependency['key'] = strtolower($dependency['key']);
+            $newDependency = Dependency::create($dependency);
+            array_push($result, $newDependency->toArray());
+        }
+
+        return $this->sendResponse($result, "Dependecies created successfully");
     }
 
     /**
@@ -51,11 +59,9 @@ class DependencyController extends Controller
      */
     public function show($id)
     {
-        $dependency = Dependency::where( '_id', $id )->get();
+        $dependency = Dependency::where('_id', $id)->get();
 
-        return response()->json( [
-            'data' => $dependency
-        ], 200);
+        return $this->sendResponse([$dependency], "Successfully handled request");
     }
 
     /**
@@ -67,24 +73,27 @@ class DependencyController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $dependency = Dependency::find($id);
-
-        if ($dependency == null)
-        {
-            return response()->json($this->handleErrors('notfound'), 404);
-        }
-
         $validated = $request->validate([
-            'name' => 'required',
+            'data.*.name' => 'required'
         ]);
 
-        $dependency->name = $request->name;
-        $dependency->save();
+        $data = $request->data;
 
-        return response()->json( [
-            'message' => 'Dependency updated succesfully.',
-            'data' => $dependency,
-        ], 200);
+        foreach ($data as $dependencyUpdated) 
+		{
+            if (array_key_exists('_id', $dependencyUpdated))
+            {
+                $dependency = Dependency::find($dependencyUpdated['_id']);
+
+                if ($dependency)
+                {
+                    $dependency->fill($dependencyUpdated);
+                    $dependency->update();
+                }
+            }
+        }
+
+        return response()->json(['message' => 'Users updated succesfully.'], 200);
     }
 
     /**
@@ -101,11 +110,11 @@ class DependencyController extends Controller
 
         $data = $request->data;
 
-        foreach ($data as $id) 
+        foreach ($data as $dependency) 
 		{
-            if (array_key_exists('_id', $id))
+            if (array_key_exists('_id', $dependency))
             {
-                Dependency::where('_id', $id['_id'])->delete();
+                Dependency::where('_id', $dependency['_id'])->delete();
             }
         }
 

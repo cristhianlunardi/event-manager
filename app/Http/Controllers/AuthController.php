@@ -36,6 +36,7 @@ class AuthController extends ApiController
 
     public function register(RegisterUser $request)
     {
+        // ! Bug 001 : - Need to verify if every email is unique (inside the request)
         $validated = $request->validate([
             'data.*.email' => 'unique:users'
         ]);
@@ -61,11 +62,11 @@ class AuthController extends ApiController
 
         $data = $request->data;
 
-        foreach ($data as $id) 
+        foreach ($data as $user) 
 		{
-            if (array_key_exists('_id', $id))
+            if (array_key_exists('email', $user))
             {
-                User::where('_id', $id['_id'])->delete();
+                User::where('email', $user['email'])->delete();
             }
         }
 
@@ -98,10 +99,13 @@ class AuthController extends ApiController
 		{
             if (array_key_exists('_id', $userUpdated))
             {
-                $id = $userUpdated['_id'];
-                unset($userUpdated['_id']);
+                $user = User::find($userUpdated['_id']);
 
-                $user = User::where('_id', $id)->update($userUpdated);
+                if ($user)
+                {
+                    $user->fill($userUpdated);
+                    $user->update();
+                }
             }
         }
 
@@ -117,7 +121,7 @@ class AuthController extends ApiController
         ]);
     }
 
-    public function handleErrors( $error )
+    public function handleErrors($error)
     {
         switch ( $error )
         {
