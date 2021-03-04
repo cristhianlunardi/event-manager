@@ -9,7 +9,7 @@ class DependencyController extends ApiController
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index']]);
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
     }
 
     /**
@@ -61,7 +61,7 @@ class DependencyController extends ApiController
     {
         $dependency = Dependency::where('_id', $id)->get();
 
-        return $this->sendResponse([$dependency], "Successfully handled request");
+        return $this->sendResponse($dependency, "Successfully handled request");
     }
 
     /**
@@ -78,6 +78,7 @@ class DependencyController extends ApiController
         ]);
 
         $data = $request->data;
+        $result = [];
 
         foreach ($data as $dependencyUpdated) 
 		{
@@ -89,11 +90,13 @@ class DependencyController extends ApiController
                 {
                     $dependency->fill($dependencyUpdated);
                     $dependency->update();
+                    array_push($result, $dependency->toArray());
                 }
             }
         }
 
-        return response()->json(['message' => 'Users updated succesfully.'], 200);
+        return $this->sendResponse($result, "Users updated succesfully");
+        //return response()->json(['message' => 'Users updated succesfully.'], 200);
     }
 
     /**
