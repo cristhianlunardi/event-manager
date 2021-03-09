@@ -7,6 +7,11 @@ use App\Models\User;
 
 class UserController extends ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', []);
+    }
+
     public function getUsers()
     {
         $data = User::all();

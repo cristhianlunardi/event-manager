@@ -24,12 +24,12 @@ class RegisterUser extends FormRequest
     public function rules()
     {
         return [
-            "data.*.email"  => "bail | required | email",
-            "data.*.password"  => "required | min:6",
-            "data.*.c_password"  => "required | same:data.*.password",
+            "data.*.email"  => "bail|required|unique:users|email",
+            "data.*.password"  => "required|min:6",
+            "data.*.c_password"  => "required|same:data.*.password",
             "data.*.fullName"  => "required",
-            "data.*.birthday"  => "required | date",
-            "data.*.dependency"  => "required |exists:event_types,name",
+            "data.*.birthday"  => "required|date",
+            "data.*.dependency"  => "required|exists:event_types,name",
             "data.*.rol"  => "required",
         ];
     }

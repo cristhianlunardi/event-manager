@@ -94,6 +94,7 @@ class AuthController extends ApiController
     public function update(RegisterUser $request)
     {
         $data = $request->data;
+        $result = [];
 
         foreach ($data as $userUpdated) 
 		{
@@ -105,11 +106,13 @@ class AuthController extends ApiController
                 {
                     $user->fill($userUpdated);
                     $user->update();
+                    array_push($result, $user->toArray());
                 }
             }
         }
 
-        return response()->json(['message' => 'Users updated succesfully.'], 200);
+        return $this->sendResponse($result, "Users updated succesfully");
+        //return response()->json(['message' => 'Users updated succesfully.'], 200);
     }
 
     protected function respondWithToken($token)

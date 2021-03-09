@@ -23,12 +23,6 @@ Route::group(['middleware'=>'auth:api'], function() {
     
 });
 
-Route::group(['middleware' => 'lowercaseKey'], function () {
-    Route::apiResources([
-        
-    ]);
-});
-
 Route::apiResources([
     'dependencies' => \App\Http\Controllers\DependencyController::class,
     'eventtypes' => \App\Http\Controllers\EventTypeController::class,
