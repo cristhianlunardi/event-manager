@@ -6,7 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\RegisterUser;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 
 class AuthController extends ApiController
 {
@@ -70,14 +70,14 @@ class AuthController extends ApiController
         return response()->json(['message' => 'Users deleted succesfully.'], 200);
     }
 
-    public function logout()
+    public function logout(): JsonResponse
     {
         Auth::check();
         Auth::user()->token()->revoke();
         return $this->sendResponse([], "Successfully handled request (logout)");
     }
 
-    public function selfUser()
+    public function selfUser(): JsonResponse
     {
         $user = Auth::user();
 
