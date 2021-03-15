@@ -1,5 +1,7 @@
 <?php
 
+namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,27 +15,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+// Route 'login' is 'oauth/token' from passport package. 'grant_type' => 'password' must be used.
+// Route 'refresh_token' is 'oauth/token' from passport package. 'grant_type' => 'refresh_token' must be used.
 Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
 
 Route::prefix('users')->group(function()
 {
-    Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
-    Route::get('/', [\App\Http\Controllers\UserController::class, 'getUsers']);
+    Route::post('register', [UserController::class, 'register']);
 
     Route::middleware('auth')->group(function()
     {
-        Route::get('me', [\App\Http\Controllers\AuthController::class, 'selfUser']);
-        Route::delete('delete', [\App\Http\Controllers\AuthController::class, 'deleteUsers']);
-        Route::post('update', [\App\Http\Controllers\AuthController::class, 'update']);
+        Route::get('/', [UserController::class, 'getUsers']);
+        Route::get('me', [UserController::class, 'selfUser']);
+        Route::delete('delete', [UserController::class, 'destroyUser']);
+        Route::post('update', [UserController::class, 'updateUser']);
     });
 });
 
-Route::middleware('auth')->group(function()
-{
-    Route::apiResources([
-        'dependencies' => \App\Http\Controllers\DependencyController::class,
-        'eventTypes' => \App\Http\Controllers\EventTypeController::class,
-        'event' => \App\Http\Controllers\EventController::class,
-    ]);
-});
+// These 'apiResources' are using => Route::middleware('auth') inside each constructor
+// Still need to find if there's a better approach
+Route::apiResources([
+    'dependencies' => DependencyController::class,
+    'eventTypes' => EventTypeController::class,
+    'event' => EventController::class,
+]);

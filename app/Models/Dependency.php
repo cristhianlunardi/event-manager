@@ -10,7 +10,7 @@ class Dependency extends Model
     use HasFactory;
 
     protected $fillable = [
+        'key',
         'name',
-        'key'
     ];
 }

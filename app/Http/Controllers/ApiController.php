@@ -8,7 +8,7 @@ class ApiController extends Controller
 {
     public function sendResponse($result = [], $message = "The request was successfully processed."): JsonResponse
     {
-        // response()->json() could be used directly, but, in order to keep consistency
+        // response()->json() could be used directly, but, in order to keep consistency the following case was defined
         if (empty($result)) return response()->json([], 204);
 
         $response = [
@@ -20,7 +20,7 @@ class ApiController extends Controller
         return response()->json($response, 200);
     }
 
-    public function sendError($message, $errors = [], $code = 400): JsonResponse
+    public function sendError($code = 400, $message = "", $errors = []): JsonResponse
     {
         $response = [
             'success' => false,

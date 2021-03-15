@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreDependencyRequest;
 use Illuminate\Http\Request;
 use App\Models\Dependency;
+use Illuminate\Http\JsonResponse;
 
 class DependencyController extends ApiController
 {
@@ -15,31 +17,24 @@ class DependencyController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //$dependencies = Dependency::orderBy('name', 'asc')->get();
         $data = Dependency::all();
 
-        return $this->sendResponse($data, "Successfully handled request");
+        return $this->sendResponse($data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreDependencyRequest $request
+     * @return JsonResponse
      */
-    public function store(Request $request)
+    public function store(StoreDependencyRequest $request): JsonResponse
     {
-        // ! Bug 001 : - Need to verify if every "dependency key" is unique (inside the request)
-        $validated = $request->validate([
-            'data' => 'required',
-            'data.*.key' => 'required | unique:dependencies',
-            'data.*.name' => 'required'
-        ]);
-
+        // BUG001 : - Need to verify if every "dependency key" is unique (inside the request)
         $result = [];
 
         foreach ($request->data as $dependency)
@@ -49,51 +44,49 @@ class DependencyController extends ApiController
             array_push($result, $newDependency->toArray());
         }
 
-        return $this->sendResponse($result, "Dependecies created successfully");
+        return $this->sendResponse($result);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param string $id
+     * @return JsonResponse
      */
-    public function show($id)
+    public function show(string $id): JsonResponse
     {
-        $dependency = Dependency::where('_id', $id)->get();
+        $dependency = Dependency::where('_id', $id)->first();
 
-        return $this->sendResponse($dependency, "Successfully handled request");
+        return $this->sendResponse($dependency);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(Request $request): JsonResponse
     {
         $validated = $request->validate([
             'data' => 'required',
-            'data.*.name' => 'required'
+            'data.*_id' => 'required',
+            'data.*.key' => 'required',
+            'data.*.name' => 'required',
         ]);
 
         $data = $request->data;
         $result = [];
 
-        foreach ($data as $dependencyUpdated) 
+        foreach ($data as $dependencyUpdated)
 		{
-            if (array_key_exists('_id', $dependencyUpdated))
-            {
-                $dependency = Dependency::find($dependencyUpdated['_id']);
+            $dependency = Dependency::first($dependencyUpdated['_id']);
 
-                if ($dependency)
-                {
-                    $dependency->fill($dependencyUpdated);
-                    $dependency->update();
-                    array_push($result, $dependency->toArray());
-                }
+            if ($dependency)
+            {
+                $dependency->fill($dependencyUpdated);
+                $dependency->update();
+                array_push($result, $dependency->toArray());
             }
         }
 
@@ -114,7 +107,7 @@ class DependencyController extends ApiController
 
         $data = $request->data;
 
-        foreach ($data as $dependency) 
+        foreach ($data as $dependency)
 		{
             if (array_key_exists('_id', $dependency))
             {
