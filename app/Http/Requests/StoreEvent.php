@@ -26,6 +26,7 @@ class StoreEvent extends FormRequest
     {
 
         return [
+            "data" => "required",
             "data.*.title"  => "required",
             "data.*.dependency"  => "required",
             "data.*.eventType"  => "required",

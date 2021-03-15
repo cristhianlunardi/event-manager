@@ -7,13 +7,18 @@ use Illuminate\Http\Request;
 use App\Http\Resources\EventTypeResource;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class EventTypeController extends Controller
+class EventTypeController extends ApiController
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+    }
+
     public function index()
     {
         $eventTypes = EventType::all();
@@ -32,16 +37,22 @@ class EventTypeController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required',
-            'fields' => 'required',
+            'data' => 'required',
+            'data.*.name' => 'required',
+            'data.*.key' => 'required|unique:event_types',
+            'data.*.fields' => 'required',
         ]);
 
-        $eventType = new EventType();
-        $eventType->name = $request->name;
-        $eventType->fields = $request->fields;
-        $eventType->save();
+        $result = [];
 
-        return new EventTypeResource($eventType);
+        foreach ($request->data as $eventType)
+        {
+            $eventType['key'] = strtolower($eventType['key']);
+            $newEventType = EventType::create($eventType);
+            array_push($result, $newEventType->toArray());
+        }
+
+        return $this->sendResponse($result, "Event types created successfully");
     }
 
     /**
@@ -50,15 +61,11 @@ class EventTypeController extends Controller
      * @param  \App\Models\EventType  $eventType
      * @return \Illuminate\Http\Response
      */
-    public function show(EventType $eventType, $id)
+    public function show($id)
     {
-        $eventType = EventType::find($id);
-        if ($eventType == null)
-        {
-            return response()->json($this->handleErrors('notfound'), 404);
-        }
+        $dependency = EventType::where('_id', $id)->get();
 
-        return new EventTypeResource($eventType);
+        return $this->sendResponse($dependency, "Successfully handled request");
     }
 
     /**
@@ -70,30 +77,49 @@ class EventTypeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $eventType = EventType::find($id);
-
-        if ($eventType == null)
-        {
-            return response()->json($this->handleErrors('notfound'), 404);
-        }
-
         $validated = $request->validate([
             'data' => 'required',
-            'data.name' => 'required',
-            'data.fields' => 'required',
+            'data.*._id' => 'required',
+            'data.*.name' => 'required',
+            'data.*.key' => 'required',
+            'data.*.fields' => 'required',
         ]);
 
         $data = $request->data;
+        $result = [];
 
-        $eventType->name = $data['name'];
-        $eventType->fields = $data['fields'];
+        foreach($data as $eventTypeUpdated)
+        {
+            try
+            {
+                $eventType = $this->findIdOrFail($eventTypeUpdated['_id']);
+            }
+            catch (ModelNotFoundException $e)
+            {
+                //return $this->handleErrors('_id');
+                $k = $e->getMessage();
+                return $k;
+            }
 
-        $eventType->save();
+            /*if ($eventType->key != $eventTypeUpdated['key'])
+            {
+                try
+                {
+                    $errors = $this->uniqueKeyOrFail($eventTypeUpdate['key']);
+                }
+                if ($errors != null) return;
+            }*/
+        }
 
-        return response()->json( [
-            'message' => 'EventType updated succesfully.',
-            'data' => $eventType,
-        ], 200);
+        /*foreach ($data as $eventTypeUpdated) 
+		{
+            $eventType = EventType::find($eventTypeUpdated['_id']);
+            $eventType->fill($eventTypeUpdated);
+            $eventType->update();
+            array_push($result, $eventType->toArray());
+        }
+
+        return $this->sendResponse($result, "Event types updated succesfully");*/
     }
 
     /**
@@ -105,37 +131,67 @@ class EventTypeController extends Controller
     public function destroy(Request $request)
     {
         $validated = $request->validate([
-            'data' => 'required'
+            'data' => 'required',
+            'data.*._id' => 'required',
         ]);
 
         $data = $request->data;
 
-        foreach ($data as $id) 
-		{
-            if (array_key_exists('_id', $id))
-            {
-                EventType::where('_id', $id['_id'])->delete();
-            }
+        foreach($data as $deleteElement)
+        {
+            $eventType = $this->findIdOrFail($deleteElement['_id']);
         }
 
-        return response()->json(['message' => 'EventTypes deleted succesfully.'], 200);
+        foreach ($data as $deleteElement) 
+		{
+            Dependency::where('_id', $deleteElement['_id'])->delete();
+        }
+
+        return response()->json(['message' => 'Dependencies deleted succesfully.'], 200);
     }
 
-    public function handleErrors( $error )
+    private function findIdOrFail($id)
     {
-        switch ( $error )
+        $eventType = EventType::find($id);
+        if (!$eventType)
         {
-            case 'notfound':
+            throw new ModelNotFoundException($this->handleErrors('_id'));
+        }
+
+        return $eventType;
+    }
+
+    private function uniqueKeyOrFail($key)
+    {
+        $test = EventType::where('key', $key)->get();
+        if (count($test) > 0)
+        {
+            throw new ID();
+        }
+
+        return $test;
+    }
+
+    private function handleErrors(string $error)
+    {
+        switch ($error)
+        {
+            case '_id':
             {
-                return [
-                    'message' => 'The given data was invalid.',
-                    'errors' =>
-                        [
-                            'id' => 'There isn\'t a EventType associated with that id.',
-                        ]
+                $errors = [
+                    '_id' => "There is not EventType using the given _id",
                 ];
 
-                break;
+                return $this->sendError("Wrong data values", $errors, 422);
+            }
+            
+            case 'key':
+            {
+                $errors = [
+                    'key' => "There exist one 'key' property with the same name in the database ('{$eventTypeUpdated['key']}')",
+                ];
+            
+                return $this->sendError("Wrong data values", $errors, 422); 
             }
         }
     }

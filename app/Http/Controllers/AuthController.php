@@ -17,10 +17,6 @@ class AuthController extends ApiController
      *
      * @return void
      */
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['register', 'login']]);
-    }
 
     public function testOauth()
     {
@@ -38,6 +34,7 @@ class AuthController extends ApiController
     {
         // ! Bug 001 : - Need to verify if every email is unique (inside the request)
         $validated = $request->validate([
+            'data' => 'required',
             'data.*.email' => 'unique:users'
         ]);
 
@@ -62,7 +59,7 @@ class AuthController extends ApiController
 
         $data = $request->data;
 
-        foreach ($data as $user) 
+        foreach ($data as $user)
 		{
             if (array_key_exists('email', $user))
             {
@@ -96,7 +93,7 @@ class AuthController extends ApiController
         $data = $request->data;
         $result = [];
 
-        foreach ($data as $userUpdated) 
+        foreach ($data as $userUpdated)
 		{
             if (array_key_exists('_id', $userUpdated))
             {

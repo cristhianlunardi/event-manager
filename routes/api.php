@@ -1,6 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,34 +13,27 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
+Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
 
-Route::group(['middleware'=>'auth:api'], function() {
-    Route::post('testOauth', [\App\Http\Controllers\AuthController::class, 'testOauth']);
-    
-});
+Route::prefix('users')->group(function()
+{
+    Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
+    Route::get('/', [\App\Http\Controllers\UserController::class, 'getUsers']);
 
-Route::apiResources([
-    'dependencies' => \App\Http\Controllers\DependencyController::class,
-    'eventtypes' => \App\Http\Controllers\EventTypeController::class,
-    'event' => \App\Http\Controllers\EventController::class,
-]); 
-
-Route::group(
-    [
-        'middleware' => 'api',
-        'prefix' => 'user'
-    ],
-    function ()
+    Route::middleware('auth')->group(function()
     {
-        Route::post('register', [\App\Http\Controllers\AuthController::class, 'register']);
+        Route::get('me', [\App\Http\Controllers\AuthController::class, 'selfUser']);
         Route::delete('delete', [\App\Http\Controllers\AuthController::class, 'deleteUsers']);
-        Route::post('login', [\App\Http\Controllers\AuthController::class, 'login']);
-        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
-        Route::get('self', [\App\Http\Controllers\AuthController::class, 'selfUser']);
-        Route::get('all', [\App\Http\Controllers\UserController::class, 'getUsers']);
         Route::post('update', [\App\Http\Controllers\AuthController::class, 'update']);
-    }
-);
+    });
+});
+
+Route::middleware('auth')->group(function()
+{
+    Route::apiResources([
+        'dependencies' => \App\Http\Controllers\DependencyController::class,
+        'eventTypes' => \App\Http\Controllers\EventTypeController::class,
+        'event' => \App\Http\Controllers\EventController::class,
+    ]);
+});

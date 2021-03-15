@@ -35,6 +35,7 @@ class DependencyController extends ApiController
     {
         // ! Bug 001 : - Need to verify if every "dependency key" is unique (inside the request)
         $validated = $request->validate([
+            'data' => 'required',
             'data.*.key' => 'required | unique:dependencies',
             'data.*.name' => 'required'
         ]);
@@ -74,6 +75,7 @@ class DependencyController extends ApiController
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
+            'data' => 'required',
             'data.*.name' => 'required'
         ]);
 
@@ -95,8 +97,7 @@ class DependencyController extends ApiController
             }
         }
 
-        return $this->sendResponse($result, "Users updated succesfully");
-        //return response()->json(['message' => 'Users updated succesfully.'], 200);
+        return $this->sendResponse($result, "Dependencies updated succesfully");
     }
 
     /**
