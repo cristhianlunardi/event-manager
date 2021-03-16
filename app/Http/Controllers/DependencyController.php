@@ -21,7 +21,7 @@ class DependencyController extends ApiController
      */
     public function index(): JsonResponse
     {
-        $data = Dependency::all();
+        $data = Dependency::all('name');
 
         return $this->sendResponse($data);
     }

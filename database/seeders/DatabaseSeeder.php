@@ -13,8 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(DependenciesTableSeeder::class);
-        $this->call(EventTypeSeeder::class);
-        \App\Models\User::factory(10)->create();
+        //$this->call(DependenciesTableSeeder::class);
+        //$this->call(EventTypeSeeder::class);
+        \App\Models\User::factory(2)->create();
     }
 }
