@@ -35,16 +35,20 @@ class UserController extends ApiController
         $user = User::where('email', Auth::user()->email)->first();
 
         if ($user == null) return $this->sendError(404);
-        if (Hash::check($request->password, $user->password)) return $this->sendError(403, "The given credentials doesn't match.");
+        if (Hash::check($request->password, $user->password) == false)
+        {
+            return $this->sendError(403, "The given credentials doesn't match.");
+        }
 
-        $user->isActive = false;
+        $user->isValid = false;
+        $user->save();
+
         return $this->sendResponse();
     }
 
     public function selfUser(): JsonResponse
     {
         $user = Auth::user();
-        if (!$user['isActive']) return $this->sendError(403, "The user is disabled.");
 
         return $this->sendResponse($user);
     }

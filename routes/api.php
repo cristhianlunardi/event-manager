@@ -23,7 +23,7 @@ Route::prefix('users')->group(function()
 {
     Route::post('register', [UserController::class, 'register']);
 
-    Route::middleware('auth')->group(function()
+    Route::middleware(['auth', 'validUser'])->group(function()
     {
         Route::get('/', [UserController::class, 'getUsers']);
         Route::get('me', [UserController::class, 'selfUser']);
