@@ -24,7 +24,6 @@ class UserFactory extends Factory
      */
     public function definition()
     {
-        //$dependencies = Dependency::get(['key'])->project(['_id' => 0]);
         $dependencies = Dependency::pluck('key');
 
         return [

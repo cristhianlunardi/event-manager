@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class DependenciesTableSeeder extends Seeder
+class DependenciesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class DependenciesTableSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\Dependency::factory(10)->create();
+        \App\Models\Dependency::factory(2)->create();
     }
 }

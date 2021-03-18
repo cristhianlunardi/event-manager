@@ -14,8 +14,9 @@ class CreateDependenciesTable extends Migration
     public function up()
     {
         Schema::create('dependencies', function (Blueprint $table) {
-            $table->id();
+            $table->id()->unique();
             $table->string('name');
+            $table->string('key')->unique();
         });
     }
 

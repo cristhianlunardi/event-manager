@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Route;
 // Route 'login' is 'oauth/token' from passport package. 'grant_type' => 'password' must be used.
 // Route 'refresh_token' is 'oauth/token' from passport package. 'grant_type' => 'refresh_token' must be used.
 
-
 Route::prefix('users')->group(function()
 {
     Route::post('register', [UserController::class, 'register']);
@@ -33,10 +32,15 @@ Route::prefix('users')->group(function()
     });
 });
 
-// These 'apiResources' are using => Route::middleware('auth') inside each constructor
-// Still need to find if there's a better approach
-Route::apiResources([
-    'dependencies' => DependencyController::class,
-    'eventTypes' => EventTypeController::class,
-    'event' => EventController::class,
-]);
+Route::middleware(['auth', 'validUser'])->group(function()
+{
+    // These 'apiResources' are using => Route::middleware('auth') and Route::middleware('validUser') inside each constructor
+    // because we have to 'except' the Read/index endpoint, since everyone can ask this information
+    // Still need to find if there's a better approach
+    Route::apiResources([
+        'dependencies' => DependencyController::class,
+        'eventTypes' => EventTypeController::class,
+        'event' => EventController::class,
+    ]);
+});
+
