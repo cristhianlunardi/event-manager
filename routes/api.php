@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 // Route 'login' is 'oauth/token' from passport package. 'grant_type' => 'password' must be used.
 // Route 'refresh_token' is 'oauth/token' from passport package. 'grant_type' => 'refresh_token' must be used.
-Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+
 
 Route::prefix('users')->group(function()
 {
@@ -29,6 +29,7 @@ Route::prefix('users')->group(function()
         Route::get('me', [UserController::class, 'selfUser']);
         Route::delete('delete', [UserController::class, 'destroyUser']);
         Route::post('update', [UserController::class, 'updateUser']);
+        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
 });
 
