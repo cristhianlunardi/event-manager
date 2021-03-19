@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Dependency;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -29,9 +29,8 @@ class StoreDependencyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'data' => 'required',
-            'data.*.key' => 'required|unique:dependencies',
-            'data.*.name' => 'required'
+            'name' => 'required',
+            'key' => 'required|unique:dependencies,key',
         ];
     }
 }

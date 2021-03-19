@@ -27,20 +27,17 @@ Route::prefix('users')->group(function()
         Route::get('/', [UserController::class, 'getUsers']);
         Route::get('me', [UserController::class, 'selfUser']);
         Route::delete('delete', [UserController::class, 'destroyUser']);
-        Route::post('update', [UserController::class, 'updateUser']);
+        Route::put('update', [UserController::class, 'updateUser']);
         Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
 });
 
-Route::middleware(['auth', 'validUser'])->group(function()
-{
-    // These 'apiResources' are using => Route::middleware('auth') and Route::middleware('validUser') inside each constructor
-    // because we have to 'except' the Read/index endpoint, since everyone can ask this information
-    // Still need to find if there's a better approach
-    Route::apiResources([
-        'dependencies' => DependencyController::class,
-        'eventTypes' => EventTypeController::class,
-        'event' => EventController::class,
-    ]);
-});
+// These 'apiResources' are using => Route::middleware('auth') and Route::middleware('validUser') inside each constructor
+// because we have to 'except' the Read/index endpoint, since everyone can ask this information
+// Still need to find if there's a better approach
+Route::apiResources([
+    'dependencies' => DependencyController::class
+    //'eventTypes' => EventTypeController::class,
+    //'event' => EventController::class,
+]);
 
