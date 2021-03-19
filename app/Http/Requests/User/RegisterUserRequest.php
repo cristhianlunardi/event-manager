@@ -28,7 +28,7 @@ class RegisterUserRequest extends FormRequest
             'password'  => 'required|min:6|confirmed',
             'fullName'  => 'required',
             'birthday'  => 'required|date',
-            'dependency'  => 'required|exists:dependencies,key',
+            'dependency'  => 'sometimes|exists:dependencies,key',
             'rol'  => 'required',
         ];
     }

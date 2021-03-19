@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 
-class DependencyKeyLowercase
+class KeyLowercase
 {
     /**
      * Handle an incoming request.
@@ -16,7 +16,7 @@ class DependencyKeyLowercase
      */
     public function handle(Request $request, Closure $next)
     {
-        $request['key'] = strtolower($request['key']);
+        $request['key'] = strtolower($request['name']);
         return $next($request);
     }
 }

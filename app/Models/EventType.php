@@ -12,6 +12,10 @@ class EventType extends Model
     protected $fillable = [
         'name',
         'key',
-        'fields'
+        'fields',
+    ];
+
+    protected $hidden = [
+        'key',
     ];
 }

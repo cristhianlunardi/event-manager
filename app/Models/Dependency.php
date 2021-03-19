@@ -13,4 +13,8 @@ class Dependency extends Model
         'key',
         'name',
     ];
+
+    protected $hidden = [
+        'key',
+    ];
 }

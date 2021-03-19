@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Dependency\DestroyDependencyRequest;
 use App\Http\Requests\Dependency\UpdateDependencyRequest;
 use App\Http\Requests\Dependency\StoreDependencyRequest;
-use Illuminate\Http\Request;
 use App\Models\Dependency;
 use Illuminate\Http\JsonResponse;
 
@@ -51,7 +50,7 @@ class DependencyController extends ApiController
      */
     public function show(string $id): JsonResponse
     {
-        $dependency = Dependency::where('_id', $id)->first();
+        $dependency = Dependency::findOrFail($id);
 
         return $this->sendResponse($dependency);
     }
@@ -64,7 +63,8 @@ class DependencyController extends ApiController
      */
     public function update(UpdateDependencyRequest $request, string $id): JsonResponse
     {
-        $dependency = Dependency::where('_id', $id)->first();
+        //$dependency = Dependency::where('_id', $id)->firstOrFail();
+        $dependency= Dependency::findOrFail($id);
         $dependency->fill($request->validated());
         $dependency->save();
 
