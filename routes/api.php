@@ -36,8 +36,8 @@ Route::prefix('users')->group(function()
 // because we have to 'except' the Read/index endpoint, since everyone can ask this information
 // Still need to find if there's a better approach
 Route::apiResources([
-    'dependencies' => DependencyController::class
-    //'eventTypes' => EventTypeController::class,
+    'dependencies' => DependencyController::class,
+    'eventTypes' => EventTypeController::class,
     //'event' => EventController::class,
 ]);
 

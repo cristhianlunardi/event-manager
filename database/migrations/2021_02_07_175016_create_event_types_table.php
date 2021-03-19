@@ -17,7 +17,6 @@ class CreateEventTypesTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('key');
-            // This 'object' thing is a LIE - Still need to learn how to deal with this complex objects array
             $table->object('fields');
         });
     }
