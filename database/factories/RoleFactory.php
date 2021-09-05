@@ -2,29 +2,29 @@
 
 namespace Database\Factories;
 
-use App\Models\Dependency;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
-class DependencyFactory extends Factory
+class RoleFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
      *
      * @var string
      */
-    protected $model = Dependency::class;
+    protected $model = Role::class;
 
     /**
      * Define the model's default state.
      *
      * @return array
      */
-    public function definition(): array
+    public function definition()
     {
-        $dependencyName = $this->faker->unique()->word;
+        $roleName = $this->faker->unique()->word;
         return [
-            'name' => $dependencyName,
-            'key' => strtolower($dependencyName),
+            'name' => $roleName,
+            'key' => strtolower($roleName),
         ];
     }
 }

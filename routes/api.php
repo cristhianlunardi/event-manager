@@ -38,6 +38,7 @@ Route::prefix('users')->group(function()
 Route::apiResources([
     'dependencies' => DependencyController::class,
     'eventTypes' => EventTypeController::class,
+    //'roles' => Roles::class,
     //'event' => EventController::class,
 ]);
 
