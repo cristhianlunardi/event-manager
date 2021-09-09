@@ -27,5 +27,15 @@ class UserSeeder extends Seeder
             'role' => Role::all()->random()->id,
             'isValid' => true,
         ]);
+
+        User::create([
+            'email' => 'carlos@event.com',
+            'password' => 'c123456',
+            'fullName' => 'Carlos Callañaupa',
+            'birthday' => new DateTime('22-07-1994'),
+            'dependency' => Dependency::all()->random()->id,
+            'role' => Role::all()->random()->id,
+            'isValid' => true,
+        ]);
     }
 }

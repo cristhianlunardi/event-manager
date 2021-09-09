@@ -48,10 +48,6 @@ class EventTypeSeeder extends Seeder
             'key' => $key,
             'fields' => [
                 [
-                    'label' => 'Lugar',
-                    'type' => 'string',
-                ],
-                [
                     'label' => 'Abierto al público',
                     'type' => 'bool',
                 ],
