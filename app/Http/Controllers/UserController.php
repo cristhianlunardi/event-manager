@@ -51,12 +51,9 @@ class UserController extends ApiController
     public function selfUser(): JsonResponse
     {
         $user = Auth::user();
+        $user = $this->prepareUser($user['_id']);
 
-        $role = Role::find($user['role']);
-        $user['role'] = $role['name'];
-
-        $dependency = Dependency::find($user['dependency']);
-        $user['dependency'] = $dependency['name'];
+        if ($user == null) return $this->sendError(404);
 
         return $this->sendResponse($user);
     }
@@ -68,5 +65,19 @@ class UserController extends ApiController
         $user->save();
 
         return $this->sendResponse($user);
+    }
+
+    private function prepareUser($userId)
+    {
+        $user = User::find($userId);
+        if ($user == null) return null;
+
+        $role = Role::find($user['role']);
+        $user['role'] = $role['name'];
+
+        $dependency = Dependency::find($user['dependency']);
+        $user['dependency'] = $dependency['name'];
+
+        return $user;
     }
 }
