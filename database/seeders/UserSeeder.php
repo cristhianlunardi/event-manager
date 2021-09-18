@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use DateTime;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Carbon;
 
 class UserSeeder extends Seeder
 {
