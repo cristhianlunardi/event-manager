@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\RegisterUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Models\Dependency;
+use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -49,6 +51,12 @@ class UserController extends ApiController
     public function selfUser(): JsonResponse
     {
         $user = Auth::user();
+
+        $role = Role::find($user['role']);
+        $user['role'] = $role['name'];
+
+        $dependency = Dependency::find($user['dependency']);
+        $user['dependency'] = $dependency['name'];
 
         return $this->sendResponse($user);
     }
