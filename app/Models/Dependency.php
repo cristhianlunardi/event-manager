@@ -9,12 +9,15 @@ class Dependency extends Model
 {
     use HasFactory;
 
+    protected $primaryKey = 'key';
+
     protected $fillable = [
         'name',
         'key',
     ];
 
     protected $hidden = [
+        '_id',
         'key',
     ];
 }

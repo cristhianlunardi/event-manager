@@ -24,9 +24,9 @@ class DependencyController extends ApiController
      */
     public function index(): JsonResponse
     {
-        $data = Dependency::all('name');
+        $result = Dependency::all('name');
 
-        return $this->sendResponse($data);
+        return $this->sendResponse($result);
     }
 
     /**
@@ -37,9 +37,9 @@ class DependencyController extends ApiController
      */
     public function store(StoreDependencyRequest $request): JsonResponse
     {
-        $newDependency = Dependency::create($request->validated());
+        $newDependency = Dependency::create($request->validated())->name;
 
-        return $this->sendResponse($newDependency);
+        return $this->sendResponse(['name' => $newDependency]);
     }
 
     /**
@@ -61,14 +61,15 @@ class DependencyController extends ApiController
      * @param UpdateDependencyRequest $request
      * @return JsonResponse
      */
-    public function update(UpdateDependencyRequest $request, string $id): JsonResponse
+    public function update(UpdateDependencyRequest $request, string $name): JsonResponse
     {
-        //$dependency = Dependency::where('_id', $id)->firstOrFail();
-        $dependency= Dependency::findOrFail($id);
-        $dependency->fill($request->validated());
-        $dependency->save();
+        /*$dependency = Dependency::where('name', $name);
+        $dependency->update($request->validated(), ['upsert' => true])->get();
+        //$dependency->fill($request->validated());
+        //$dependency->save();
 
-        return $this->sendResponse($dependency);
+        return $this->sendResponse(['name' => $dependency['name']]);*/
+        return $this->sendError(404, 'Not available');
     }
 
     /**

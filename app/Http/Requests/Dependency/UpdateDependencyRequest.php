@@ -14,7 +14,9 @@ class UpdateDependencyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        $dependency = Dependency::find($this->dependency);
+
+        $dependency = Dependency::where('name', $this->route('dependency'));
+        print($dependency);
         if ($dependency == null)
         {
             return false;
@@ -32,7 +34,7 @@ class UpdateDependencyRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'key' => 'required|unique:dependencies,key,'.Dependency::find($this->dependency)->key.',key',
+            'key' => 'required|unique:dependencies,key,'.Dependency::where('name', $this->route('dependency'))->get(['key']).',key',
         ];
     }
 }
