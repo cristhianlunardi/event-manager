@@ -63,13 +63,16 @@ class DependencyController extends ApiController
      */
     public function update(UpdateDependencyRequest $request, string $name): JsonResponse
     {
-        /*$dependency = Dependency::where('name', $name);
-        $dependency->update($request->validated(), ['upsert' => true])->get();
-        //$dependency->fill($request->validated());
-        //$dependency->save();
+        $dependency = Dependency::where('name', $name)->first();
 
-        return $this->sendResponse(['name' => $dependency['name']]);*/
-        return $this->sendError(404, 'Not available');
+        if (empty($dependency))
+        {
+            return $this->sendError(404, 'The Dependency called '.$name.' was not found.');
+        }
+
+        $dependency->update($request->all());
+
+        return $this->sendResponse(['name' => $dependency->name]);
     }
 
     /**

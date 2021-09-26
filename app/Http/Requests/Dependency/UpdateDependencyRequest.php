@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\Dependency;
 
-use App\Models\Dependency;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDependencyRequest extends FormRequest
@@ -14,14 +13,6 @@ class UpdateDependencyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-
-        $dependency = Dependency::where('name', $this->route('dependency'));
-        print($dependency);
-        if ($dependency == null)
-        {
-            return false;
-        }
-
         return true;
     }
 
@@ -34,7 +25,7 @@ class UpdateDependencyRequest extends FormRequest
     {
         return [
             'name' => 'required',
-            'key' => 'required|unique:dependencies,key,'.Dependency::where('name', $this->route('dependency'))->get(['key']).',key',
+            'key' => 'required|unique:dependencies,key,',
         ];
     }
 }
