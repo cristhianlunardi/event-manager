@@ -9,8 +9,6 @@ class Dependency extends Model
 {
     use HasFactory;
 
-    protected $primaryKey = 'key';
-
     protected $fillable = [
         'name',
         'key',

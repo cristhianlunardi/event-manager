@@ -52,7 +52,7 @@ class DependencyController extends ApiController
     {
         $dependency = Dependency::findOrFail($id)->name;
 
-        return $this->sendResponse($dependency);
+        return $this->sendResponse(['name' => $dependency]);
     }
 
     /**
