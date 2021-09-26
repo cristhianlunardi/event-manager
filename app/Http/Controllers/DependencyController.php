@@ -78,9 +78,14 @@ class DependencyController extends ApiController
      * @param  string  $id
      * @return JsonResponse
      */
-    public function destroy(DestroyDependencyRequest $request, string $id): JsonResponse
+    public function destroy(string $name): JsonResponse
     {
-        Dependency::findOrFail($id)->delete();
+        $dependency = Dependency::where('name', $name)->delete();
+
+        if (!$dependency)
+        {
+            return $this->sendError(404, 'The Dependency called '.$name.' was not found.');
+        }
 
         return $this->sendResponse();
     }
