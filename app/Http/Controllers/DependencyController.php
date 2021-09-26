@@ -24,7 +24,7 @@ class DependencyController extends ApiController
      */
     public function index(): JsonResponse
     {
-        $result = Dependency::all('name');
+        $result = Dependency::whereNotNull('name')->orderBy('name', 'asc')->get(['name']);
 
         return $this->sendResponse($result);
     }
@@ -50,7 +50,7 @@ class DependencyController extends ApiController
      */
     public function show(string $id): JsonResponse
     {
-        $dependency = Dependency::findOrFail($id);
+        $dependency = Dependency::findOrFail($id)->name;
 
         return $this->sendResponse($dependency);
     }
