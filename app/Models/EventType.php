@@ -16,6 +16,7 @@ class EventType extends Model
     ];
 
     protected $hidden = [
+        '_id',
         'key',
     ];
 }

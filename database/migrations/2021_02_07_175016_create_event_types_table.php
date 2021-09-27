@@ -15,7 +15,7 @@ class CreateEventTypesTable extends Migration
     {
         Schema::create('event_types', function (Blueprint $table) {
             $table->string('name');
-            $table->primary('key');
+            $table->unique('key');
             $table->json('fields');
         });
     }
