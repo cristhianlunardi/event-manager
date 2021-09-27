@@ -25,7 +25,7 @@ class EventTypeFactory extends Factory
 
         return [
             'name' => $name,
-            'key' => strtolower($name),
+            'key' => mb_strtolower($name),
             'fields' => [
                 [
                     'label' => $this->faker->lexify('???????????'),

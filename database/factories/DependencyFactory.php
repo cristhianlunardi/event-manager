@@ -24,7 +24,7 @@ class DependencyFactory extends Factory
         $dependencyName = $this->faker->unique()->word;
         return [
             'name' => $dependencyName,
-            'key' => strtolower($dependencyName),
+            'key' => mb_strtolower($dependencyName),
         ];
     }
 }

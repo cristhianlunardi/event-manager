@@ -24,7 +24,7 @@ class RoleFactory extends Factory
         $roleName = $this->faker->unique()->word;
         return [
             'name' => $roleName,
-            'key' => strtolower($roleName),
+            'key' => mb_strtolower($roleName),
         ];
     }
 }

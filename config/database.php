@@ -98,8 +98,6 @@ return [
             'database' => env('DB_DATABASE', 'eventmanager'),
             'username' => env('DB_USERNAME'),
             'password' => env('DB_PASSWORD'),
-            'charset'   => 'utf8',
-            'collation' => 'utf8_unicode_ci',
             'options' => [
                 // here you can pass more settings to the Mongo Driver Manager
                 // see https://www.php.net/manual/en/mongodb-driver-manager.construct.php under "Uri Options" for a list of complete parameters that you can use

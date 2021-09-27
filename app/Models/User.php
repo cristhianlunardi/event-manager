@@ -46,11 +46,11 @@ class User extends Authenticatable
 
     public function setEmailAttribute($email)
     {
-        $this->attributes['email'] = strtolower($email);
+        $this->attributes['email'] = mb_strtolower($email);
     }
 
     public function getEmailAttribute($email): string
     {
-        return strtolower($email);
+        return mb_strtolower($email);
     }
 }

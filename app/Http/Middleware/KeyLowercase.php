@@ -16,7 +16,7 @@ class KeyLowercase
      */
     public function handle(Request $request, Closure $next)
     {
-        $request['key'] = strtolower($request['name']);
+        $request['key'] = mb_strtolower($request['name']);
         return $next($request);
     }
 }

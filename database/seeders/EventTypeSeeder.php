@@ -17,7 +17,7 @@ class EventTypeSeeder extends Seeder
         //\App\Models\EventType::factory(2)->create();
 
         $name = 'Maratón de Programación';
-        $key = strtolower($name);
+        $key = mb_strtolower($name);
         EventType::create([
             'name' => $name,
             'key' => $key,
@@ -42,7 +42,7 @@ class EventTypeSeeder extends Seeder
         ]);
 
         $name = 'Consejo de Facultad';
-        $key = strtolower($name);
+        $key = mb_strtolower($name);
         EventType::create([
             'name' => $name,
             'key' => $key,
