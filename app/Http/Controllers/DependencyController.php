@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Dependency\DestroyDependencyRequest;
 use App\Http\Requests\Dependency\UpdateDependencyRequest;
 use App\Http\Requests\Dependency\StoreDependencyRequest;
 use App\Models\Dependency;
