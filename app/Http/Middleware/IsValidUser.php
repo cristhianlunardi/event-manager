@@ -17,7 +17,7 @@ class IsValidUser
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user() == null || Auth::user()->isValid == false)
+        if (Auth::user() == null || Auth::user()->isActive == false)
         {
             return response()->json(['error' => 'The user is disabled.'], 403);
         }

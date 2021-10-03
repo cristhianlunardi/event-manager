@@ -19,6 +19,10 @@ class EventTypeController extends ApiController
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
         $this->middleware('validUser', ['except' => ['index', 'show']]);
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
+
+        // Privileges
+        $this->middleware('isProfesor', ['only' => ['store']]);
+        $this->middleware('isCoordinador', ['only' => ['update', 'destroy']]);
     }
 
     public function index() : JsonResponse
