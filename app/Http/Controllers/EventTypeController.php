@@ -21,7 +21,7 @@ class EventTypeController extends ApiController
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
-        $this->middleware('isProfesor', ['only' => ['store']]);
+        $this->middleware('isProfessor', ['only' => ['store']]);
         $this->middleware('isCoordinador', ['only' => ['update', 'destroy']]);
     }
 

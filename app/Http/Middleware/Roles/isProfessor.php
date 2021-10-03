@@ -8,7 +8,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class isProfesor
+class isProfessor
 {
     /**
      * Handle an incoming request.
@@ -26,7 +26,7 @@ class isProfesor
             return response()->json(['error' => 'The user have not privileges to perform this action.'], 403);
         }
 
-        if (in_array($userRole->name, Privileges::PROFESOR_HIERARCHY))
+        if (in_array($userRole->name, Privileges::PROFESSOR_HIERARCHY))
         {
             return $next($request);
         }
