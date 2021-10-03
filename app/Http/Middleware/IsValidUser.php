@@ -19,7 +19,7 @@ class IsValidUser
     {
         if (Auth::user() == null || Auth::user()->isValid == false)
         {
-            return response()->json(['error' => 'The user is disabled.'], 403);;
+            return response()->json(['error' => 'The user is disabled.'], 403);
         }
 
         return $next($request);
