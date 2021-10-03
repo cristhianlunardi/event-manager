@@ -6,8 +6,6 @@ use App\Http\Requests\EventType\StoreEventTypeRequest;
 use App\Http\Requests\EventType\UpdateEventTypeRequest;
 use App\Models\EventType;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EventTypeController extends ApiController
 {
@@ -25,9 +23,9 @@ class EventTypeController extends ApiController
 
     public function index() : JsonResponse
     {
-        $eventTypes = EventType::all()->except('key');
+        $result = EventType::whereNotNull('name')->orderBy('name', 'asc')->get(['name']);
 
-        return $this->sendResponse($eventTypes);
+        return $this->sendResponse($result);
     }
 
     /**

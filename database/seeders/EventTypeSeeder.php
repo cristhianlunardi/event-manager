@@ -14,8 +14,6 @@ class EventTypeSeeder extends Seeder
      */
     public function run()
     {
-        //\App\Models\EventType::factory(2)->create();
-
         $name = 'Maratón de Programación';
         $key = mb_strtolower($name);
         EventType::create([

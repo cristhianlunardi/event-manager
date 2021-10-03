@@ -18,7 +18,6 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        //User::factory(10)->create();
         User::create([
             'email' => 'cristhian@event.com',
             'password' => 'c123456',
@@ -26,7 +25,7 @@ class UserSeeder extends Seeder
             'birthday' => new DateTime('14-07-1995'),
             'dependency' => Dependency::all()->random()->id,
             'role' => Role::all()->random()->id,
-            'isValid' => true,
+            'isActive' => true,
         ]);
 
         User::create([
@@ -36,7 +35,7 @@ class UserSeeder extends Seeder
             'birthday' => new DateTime('22-07-1994'),
             'dependency' => Dependency::all()->random()->id,
             'role' => Role::all()->random()->id,
-            'isValid' => true,
+            'isActive' => true,
         ]);
     }
 }
