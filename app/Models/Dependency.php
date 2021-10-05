@@ -16,6 +16,5 @@ class Dependency extends Model
 
     protected $hidden = [
         '_id',
-        'key',
     ];
 }

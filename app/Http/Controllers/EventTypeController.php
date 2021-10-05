@@ -16,12 +16,12 @@ class EventTypeController extends ApiController
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
-        $this->middleware('validUser', ['except' => ['index', 'show']]);
+        $this->middleware('auth:api', ['except' => ['index']]);
+        $this->middleware('validUser', ['except' => ['index']]);
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
-        $this->middleware('isProfessor', ['only' => ['store']]);
+        $this->middleware('isProfessor', ['only' => ['store', 'show', 'getAllEventTypes']]);
         $this->middleware('isCoordinator', ['only' => ['update', 'destroy']]);
     }
 
@@ -51,11 +51,16 @@ class EventTypeController extends ApiController
      * @param string $id
      * @return JsonResponse
      */
-    public function show(string $id) : JsonResponse
+    public function show(string $name) : JsonResponse
     {
-        $dependency = EventType::findOrFail($id);
+        $eventType = EventType::where('name', $name)->first();
 
-        return $this->sendResponse($dependency);
+        if (empty($eventType))
+        {
+            return $this->sendError(404, 'The Event Type called '.$name.' was not found.');
+        }
+
+        return $this->sendResponse($eventType);
     }
 
     /**
@@ -65,10 +70,16 @@ class EventTypeController extends ApiController
      * @param string $id
      * @return JsonResponse
      */
-    public function update(UpdateEventTypeRequest $request, string $id) : JsonResponse
+    public function update(UpdateEventTypeRequest $request, string $name) : JsonResponse
     {
-        $eventType = EventType::findOrFail($id);
-        $eventType->fill($request->validated())->save();
+        $eventType = EventType::where('name', $name)->first();
+
+        if (empty($eventType))
+        {
+            return $this->sendError(404, 'The Event Type called '.$name.' was not found.');
+        }
+
+        $eventType->update($request->all());
 
         return $this->sendResponse($eventType);
     }
@@ -79,10 +90,23 @@ class EventTypeController extends ApiController
      * @param string $id
      * @return JsonResponse
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(string $name): JsonResponse
     {
-        EventType::findOrFail($id)->delete();
+        $eventType = EventType::where('name', $name)->delete();
+
+        if (!$eventType)
+        {
+            return $this->sendError(404, 'The Event Type called '.$name.' was not found.');
+        }
 
         return $this->sendResponse();
+    }
+
+
+    public function getAllEventTypes(): JsonResponse
+    {
+        $result = EventType::all();
+
+        return $this->sendResponse($result);
     }
 }

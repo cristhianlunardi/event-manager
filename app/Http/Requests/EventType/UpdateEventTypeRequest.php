@@ -24,9 +24,13 @@ class UpdateEventTypeRequest extends FormRequest
      */
     public function rules()
     {
+        $eventType = EventType::where('name', $this->route('eventType'))->first();
+
+        if (empty($eventType)) return [];
+
         return [
             'name' => 'required',
-            'key' => 'required|unique:event_type,key,'.EventType::findOrFail($this->eventType)->key.',key',
+            'key' => 'required|unique:event_types,key,'.$eventType->key.',key',
             'fields' => 'required',
         ];
     }

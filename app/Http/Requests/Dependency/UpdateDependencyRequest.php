@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Dependency;
 
+use App\Models\Dependency;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateDependencyRequest extends FormRequest
@@ -23,9 +24,13 @@ class UpdateDependencyRequest extends FormRequest
      */
     public function rules(): array
     {
+        $dependency = Dependency::where('name', $this->route('dependency'))->first();
+
+        if (empty($dependency)) return [];
+
         return [
             'name' => 'required',
-            'key' => 'required|unique:dependencies,key,',
+            'key' => 'required|unique:dependencies,key,'.$dependency->key.',key',
         ];
     }
 }
