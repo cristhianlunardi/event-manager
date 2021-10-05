@@ -22,7 +22,7 @@ class EventTypeController extends ApiController
 
         // Privileges
         $this->middleware('isProfessor', ['only' => ['store']]);
-        $this->middleware('isCoordinador', ['only' => ['update', 'destroy']]);
+        $this->middleware('isCoordinator', ['only' => ['update', 'destroy']]);
     }
 
     public function index() : JsonResponse

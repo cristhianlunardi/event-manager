@@ -67,8 +67,8 @@ class Kernel extends HttpKernel
 
         // Privileges
         'isAdmin' => \App\Http\Middleware\Roles\isAdmin::class,
-        'isDecano' => \App\Http\Middleware\Roles\isDecano::class,
-        'isCoordinador' => \App\Http\Middleware\Roles\isCoordinador::class,
+        'isDean' => \App\Http\Middleware\Roles\isDean::class,
+        'isCoordinator' => \App\Http\Middleware\Roles\isCoordinator::class,
         'isProfessor' => \App\Http\Middleware\Roles\isProfessor::class,
     ];
 }
