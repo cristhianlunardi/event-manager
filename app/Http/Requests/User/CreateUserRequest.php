@@ -2,9 +2,11 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class RegisterUserRequest extends FormRequest
+class CreateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,6 +30,8 @@ class RegisterUserRequest extends FormRequest
             'password'  => 'required|min:6|confirmed',
             'fullName'  => 'required',
             'birthday'  => 'required|date_format:d/m/Y',
+            'dependency'  => 'required|exists:dependencies,name',
+            'role'  => 'required|exists:roles,name',
         ];
     }
 }

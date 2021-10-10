@@ -3,15 +3,16 @@
 namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class RegisterUserRequest extends FormRequest
+class EditUserRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -21,13 +22,11 @@ class RegisterUserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'email'  => 'bail|required|email|unique:users,email',
-            'password'  => 'required|min:6|confirmed',
-            'fullName'  => 'required',
-            'birthday'  => 'required|date_format:d/m/Y',
+            'name' => 'required',
+            'key' => 'required|exists:roles,key'
         ];
     }
 }

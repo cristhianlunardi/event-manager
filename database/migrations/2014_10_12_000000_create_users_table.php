@@ -21,7 +21,7 @@ class CreateUsersTable extends Migration
             $table->date('birthday');
             $table->foreign('dependency')->references('id')->on('dependencies');
             $table->foreign('role')->references('id')->on('roles');
-            $table->bool('isValid');
+            $table->bool('isActive');
             //$table->timestamps();
         });
     }

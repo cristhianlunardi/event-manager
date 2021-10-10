@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\User;
 
+use App\Models\Dependency;
 use App\Rules\ValidCurrentUserPassword;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -26,12 +27,13 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email|unique:users,email,'.Auth::user()->_id.',_id',
+            'email' => 'bail|sometimes|email|unique:users,email,'.Auth::user()->_id.',_id',
             'old_password' => ['sometimes', 'required', 'min:6', new ValidCurrentUserPassword()],
             'password'  => 'required_with:old_password|min:6|different:current_password|confirmed',
-            'fullName'  => 'required',
-            'birthday'  => 'required|date',
-            'dependency'  => 'required|exists:dependencies,key',
+            'fullName'  => 'sometimes',
+            'birthday'  => 'sometimes|date',
+            'dependency'  => 'sometimes|exists:dependencies,name',
+            'isActive' => 'sometimes|Boolean',
         ];
     }
 }

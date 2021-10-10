@@ -4,9 +4,8 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class IsValidUser
+class EmailLowercase
 {
     /**
      * Handle an incoming request.
@@ -17,9 +16,9 @@ class IsValidUser
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::user() == null || Auth::user()->isActive == false || Auth::user()->role == null)
+        if ($request['email'])
         {
-            return response()->json(['error' => 'The user is disabled or do not exist.'], 403);
+            $request['email'] = mb_strtolower($request['email']);
         }
 
         return $next($request);

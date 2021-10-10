@@ -19,5 +19,6 @@ class DependencySeeder extends Seeder
         Dependency::create(['name' => 'Biología', 'key' => 'biología']);
         Dependency::create(['name' => 'Física', 'key' => 'física']);
         Dependency::create(['name' => 'Matemática', 'key' => 'matemática']);
+        Dependency::create(['name' => 'Sin Dependencia', 'key' => 'sin dependencia']);
     }
 }

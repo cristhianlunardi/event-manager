@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'birthday' => $this->faker->date(),
             'dependency' => User::all()->random()->id,
             'role' => Role::all()->random()->id,
-            'isValid' => $this->faker->boolean,
+            'isActive' => $this->faker->boolean,
         ];
     }
 }
