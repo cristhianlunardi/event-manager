@@ -2,29 +2,34 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Role\StoreRoleRequest;
+use App\Http\Requests\Role\UpdateRoleRequest;
 use App\Models\Role;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 
-class RoleController extends Controller
+class RoleController extends ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['index', 'show']]);
+        $this->middleware('validUser', ['except' => ['index', 'show']]);
+        $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
+
+        // Privileges
+        $this->middleware('isProfessor', ['only' => ['store']]);
+        $this->middleware('isCoordinator', ['only' => ['update', 'destroy']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): JsonResponse
     {
-        //
-    }
+        $result = Role::whereNotNull('name')->orderBy('name', 'asc')->get(['name']);
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        return $this->sendResponse($result);
     }
 
     /**
@@ -33,53 +38,61 @@ class RoleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreRoleRequest $request): JsonResponse
     {
-        //
+        $newRole = Role::create($request->validated())->name;
+
+        return $this->sendResponse(['name' => $newRole]);
     }
 
     /**
      * Display the specified resource.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param string $id
+     * @return JsonResponse
      */
-    public function show(Role $role)
+    public function show(string $id): JsonResponse
     {
-        //
-    }
+        $role = Role::findOrFail($id)->name;
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Role $role)
-    {
-        //
+        return $this->sendResponse(['name' => $role]);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param UpdateRoleRequest $request
+     * @param string $name
+     * @return JsonResponse
      */
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, string $name): JsonResponse
     {
-        //
+        $role = Role::where('name', $name)->first();
+
+        if (empty($role))
+        {
+            return $this->sendError(404, 'The Role called '.$name.' was not found.');
+        }
+
+        $role->update($request->validated());
+
+        return $this->sendResponse($role);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Role  $role
-     * @return \Illuminate\Http\Response
+     * @param string $name
+     * @return JsonResponse
      */
-    public function destroy(Role $role)
+    public function destroy(string $name): JsonResponse
     {
-        //
+        $role = Role::where('name', $name)->delete();
+
+        if (!$role)
+        {
+            return $this->sendError(404, 'The Role called '.$name.' was not found.');
+        }
+
+        return $this->sendResponse();
     }
 }

@@ -62,6 +62,7 @@ class DependencyController extends ApiController
      * Update the specified resource in storage.
      *
      * @param UpdateDependencyRequest $request
+     * @param string $name
      * @return JsonResponse
      */
     public function update(UpdateDependencyRequest $request, string $name): JsonResponse
@@ -81,7 +82,7 @@ class DependencyController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  string  $id
+     * @param  string  $name
      * @return JsonResponse
      */
     public function destroy(string $name): JsonResponse

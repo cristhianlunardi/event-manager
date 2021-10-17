@@ -43,7 +43,7 @@ Route::get('eventTypes/getAllEventTypes', [EventTypeController::class, 'getAllEv
 Route::apiResources([
     'dependencies' => DependencyController::class,
     'eventTypes' => EventTypeController::class,
-    //'roles' => Roles::class,
+    'roles' => RoleController::class,
     //'event' => EventController::class,
 ]);
 
