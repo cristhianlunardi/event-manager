@@ -32,7 +32,7 @@ Route::prefix('users')->group(function()
         Route::delete('delete/{targetEmail}', [UserController::class, 'destroyUser']);
         Route::put('update', [UserController::class, 'update']);
         Route::put('update/{targetEmail}', [UserController::class, 'updateUser']);
-        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
+        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'lo  gout']);
     });
 });
 

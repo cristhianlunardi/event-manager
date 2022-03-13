@@ -6,6 +6,7 @@ use App\Http\Requests\Dependency\UpdateDependencyRequest;
 use App\Http\Requests\Dependency\StoreDependencyRequest;
 use App\Models\Dependency;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class DependencyController extends ApiController
 {
@@ -22,12 +23,15 @@ class DependencyController extends ApiController
 
     /**
      * Display a listing of the resource.
-     *
+     * @param Request $request
      * @return JsonResponse
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $result = Dependency::whereNotNull('name')->orderBy('name', 'asc')->get(['name']);
+        $pageSize = (int)$request->query('page_size', 1);
+        $result = Dependency::whereNotNull('name')->select(['name'])->orderBy('name', 'asc')->paginate($pageSize);
+
+
 
         return $this->sendResponse($result);
     }
