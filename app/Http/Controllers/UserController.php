@@ -20,11 +20,11 @@ class UserController extends ApiController
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['register']]);
-        $this->middleware('validUser', ['except' => ['register']]);
+        $this->middleware('isValidUser', ['except' => ['register']]);
 
         $this->middleware('keyLowercase', ['only' => ['editRole']]);
         $this->middleware('emailLowercase', ['only' => ['register', 'createUser', 'update', 'updateUser']]);
-        $this->middleware('isCoordinator', ['only' => ['updateUser', 'editRole', 'destroyUser', 'createUser']]);
+        $this->middleware('isCoordinator', ['only' => ['getUsers', 'updateUser', 'editRole', 'destroyUser', 'createUser']]);
     }
 
     public function register(RegisterUserRequest $request): JsonResponse
@@ -37,7 +37,7 @@ class UserController extends ApiController
         $token = $newUser->createToken("EventManager")->accessToken;
         $newUser->save();
 
-        // Just to view the actual Role Name in the response (instead of id)
+        // Just to view the actual Role Name and Dependency in the response (instead of id)
         $this->prepareUserResponse($newUser);
 
         return $this->sendResponse(array_merge(["token"=>$token], $newUser->toArray()));
@@ -65,22 +65,6 @@ class UserController extends ApiController
         }
 
         return $this->sendResponse($data);
-    }
-
-    public function destroy(DeleteUserRequest $request): JsonResponse
-    {
-        $user = User::where('email', Auth::user()->email)->first();
-
-        if ($user == null) return $this->sendError(404);
-        if (Hash::check($request->password, $user->password) == false)
-        {
-            return $this->sendError(403, "The password is incorrect.");
-        }
-
-        $user->isActive = false;
-        $user->save();
-
-        return $this->sendResponse();
     }
 
     public function destroyUser(DeleteUserRequest $request, $targetEmail): JsonResponse
@@ -115,6 +99,23 @@ class UserController extends ApiController
         $user = $this->prepareUserResponse($user);
 
         return $this->sendResponse($user);
+    }
+
+    public function destroy(DeleteUserRequest $request): JsonResponse
+    {
+        // selfDestroy
+        $user = User::where('email', Auth::user()->email)->first();
+
+        if ($user == null) return $this->sendError(404);
+        if (Hash::check($request->password, $user->password) == false)
+        {
+            return $this->sendError(403, "The password is incorrect.");
+        }
+
+        $user->isActive = false;
+        $user->save();
+
+        return $this->sendResponse();
     }
 
     public function update(UpdateUserRequest $request): JsonResponse
@@ -164,16 +165,28 @@ class UserController extends ApiController
 
     private function prepareUserResponse(User $user): User
     {
+        $mustSave = false;
+
         $role = Role::where('_id', $user->role)->first();
         if ($role)
         {
             $user->role = $role->name;
+        } else {
+            $this->assignRole($user);
+            $mustSave = true;
         }
 
         $dependency = Dependency::where('_id', $user->dependency)->first();
         if ($dependency)
         {
             $user->dependency = $dependency->name;
+        } else {
+            $this->assignDependency($user);
+            $mustSave = true;
+        }
+
+        if ($mustSave) {
+            $user->save();
         }
 
         return $user;

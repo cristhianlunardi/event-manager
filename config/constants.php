@@ -10,3 +10,4 @@ class Privileges {
     const SECRETARY_HIERARCHY = ['Admin', 'Decano', 'Coordinador', 'Profesor', 'Secretaria'];
 }
 
+const DEFAULT_PAGE_SIZE = 10;

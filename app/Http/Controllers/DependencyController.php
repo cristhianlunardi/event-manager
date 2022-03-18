@@ -7,18 +7,19 @@ use App\Http\Requests\Dependency\StoreDependencyRequest;
 use App\Models\Dependency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use const App\DEFAULT_PAGE_SIZE;
 
 class DependencyController extends ApiController
 {
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
-        $this->middleware('validUser', ['except' => ['index', 'show']]);
+        $this->middleware('isValidUser', ['except' => ['index', 'show']]);
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
-        $this->middleware('isProfessor', ['only' => ['store']]);
-        $this->middleware('isCoordinator', ['only' => ['update', 'destroy']]);
+        $this->middleware('isSecretary', ['only' => ['store']]);
+        $this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
     }
 
     /**
@@ -28,10 +29,8 @@ class DependencyController extends ApiController
      */
     public function index(Request $request): JsonResponse
     {
-        $pageSize = (int)$request->query('page_size', 1);
+        $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
         $result = Dependency::whereNotNull('name')->select(['name'])->orderBy('name', 'asc')->paginate($pageSize);
-
-
 
         return $this->sendResponse($result);
     }

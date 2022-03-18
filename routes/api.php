@@ -24,7 +24,7 @@ Route::prefix('users')->group(function()
     Route::post('createUser', [UserController::class, 'createUser']);
     Route::patch('role/{email}', [UserController::class, 'editRole']);
 
-    Route::middleware(['auth', 'validUser'])->group(function()
+    Route::middleware(['auth', 'isValidUser'])->group(function()
     {
         Route::get('/', [UserController::class, 'getUsers']);
         Route::get('me', [UserController::class, 'selfUser']);
@@ -32,7 +32,7 @@ Route::prefix('users')->group(function()
         Route::delete('delete/{targetEmail}', [UserController::class, 'destroyUser']);
         Route::put('update', [UserController::class, 'update']);
         Route::put('update/{targetEmail}', [UserController::class, 'updateUser']);
-        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'lo  gout']);
+        Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
 });
 

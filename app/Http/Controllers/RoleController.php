@@ -12,7 +12,7 @@ class RoleController extends ApiController
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['index', 'show']]);
-        $this->middleware('validUser', ['except' => ['index', 'show']]);
+        $this->middleware('isValidUser', ['except' => ['index', 'show']]);
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges

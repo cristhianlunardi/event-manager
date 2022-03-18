@@ -17,7 +17,7 @@ class EventTypeController extends ApiController
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['index']]);
-        $this->middleware('validUser', ['except' => ['index']]);
+        $this->middleware('isValidUser', ['except' => ['index']]);
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
