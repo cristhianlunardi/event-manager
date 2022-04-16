@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Notifications\MailResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Hash;
 use Jenssegers\Mongodb\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -41,9 +43,13 @@ class User extends Authenticatable
 
     protected $dateFormat = 'd/m/Y';
 
-    public function setPasswordAttribute( $password )
+    public function setPasswordAttribute($password)
     {
-        $this->attributes['password'] = bcrypt($password);
+        if (Hash::needsRehash($password)) {
+            $password = Hash::make($password);
+        }
+
+        $this->attributes['password'] = $password;
     }
 
     public function setEmailAttribute($email)
@@ -54,5 +60,10 @@ class User extends Authenticatable
     public function getEmailAttribute($email): string
     {
         return mb_strtolower($email);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new MailResetPasswordNotification($token));
     }
 }
