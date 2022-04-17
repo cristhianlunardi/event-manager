@@ -48,7 +48,7 @@ Route::prefix('users')->group(function()
 // Still need to find if there's a better approach
 Route::get('eventTypes/getAllEventTypes', [EventTypeController::class, 'getAllEventTypes']);
 Route::apiResources([
-    'dependencies' => DependencyController::class,
+    'dependency' => DependencyController::class,
     'eventTypes' => EventTypeController::class,
     'roles' => RoleController::class,
     //'event' => EventController::class,
@@ -88,11 +88,35 @@ Route::post('/forgot-password', function (Request $request) {
         $request->only('email')
     );
 
-    print($status);
+    $response = "";
 
-    return $status === Password::RESET_LINK_SENT
-        ? "true"//back()->with(['status' => __($status)])
-        : "bad false";//back()->withErrors(['email' => __($status)]);
+    switch($status) {
+        case Password::RESET_LINK_SENT:
+            $response = "Correo enviado exitosamente.";
+            break;
+
+        case Password::PASSWORD_RESET:
+            $response = "Reinicio de contraseña exitoso.";
+            break;
+
+        case Password::INVALID_USER:
+            $response = "El correo ingresado no forma parte de nuestro registro de usuarios.";
+            break;
+
+        case Password::INVALID_TOKEN:
+            $response = "Surgió un problema con la autenticación. Por favor contacte con un administrador.";
+            break;
+
+        case Password::RESET_THROTTLED:
+            $response = "Por favor espere 60 segundos antes de realizar una nueva solicitud.";
+            break;
+
+        default:
+            $response = "No fue posible establecer conexión con el servicio. Por favor contacte con un administrador.";
+            break;
+    }
+
+    return $response;
 })->middleware('guest')->name('password.email');
 
 Route::get('/god-help-us', function (Request $request) {

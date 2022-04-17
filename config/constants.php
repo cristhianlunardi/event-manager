@@ -11,3 +11,5 @@ class Privileges {
 }
 
 const DEFAULT_PAGE_SIZE = 10;
+
+const BASE_URL = "http://react-my-app:8000/";
