@@ -46,10 +46,10 @@ Route::prefix('users')->group(function()
 // These 'apiResources' are using => Route::middleware('auth') and Route::middleware('validUser') inside each constructor
 // because we have to 'except' the Read/index endpoint, since everyone can ask this information
 // Still need to find if there's a better approach
-Route::get('eventTypes/getAllEventTypes', [EventTypeController::class, 'getAllEventTypes']);
+Route::get('eventType/getAllEventTypes', [EventTypeController::class, 'getAllEventTypes']);
 Route::apiResources([
     'dependency' => DependencyController::class,
-    'eventTypes' => EventTypeController::class,
+    'eventType' => EventTypeController::class,
     'roles' => RoleController::class,
     //'event' => EventController::class,
 ]);

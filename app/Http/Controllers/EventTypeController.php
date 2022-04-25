@@ -6,6 +6,8 @@ use App\Http\Requests\EventType\StoreEventTypeRequest;
 use App\Http\Requests\EventType\UpdateEventTypeRequest;
 use App\Models\EventType;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use const App\DEFAULT_PAGE_SIZE;
 
 class EventTypeController extends ApiController
 {
@@ -21,13 +23,14 @@ class EventTypeController extends ApiController
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
-        $this->middleware('isProfessor', ['only' => ['store', 'show', 'getAllEventTypes']]);
-        $this->middleware('isCoordinator', ['only' => ['update', 'destroy']]);
+        $this->middleware('isSecretary', ['only' => ['store', 'show', 'getAllEventTypes']]);
+        $this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
     }
 
-    public function index() : JsonResponse
+    public function index(Request $request) : JsonResponse
     {
-        $result = EventType::whereNotNull('name')->orderBy('name', 'asc')->get(['name']);
+        $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
+        $result = EventType::whereNotNull('name')->select(['name'])->orderBy('name', 'asc')->paginate($pageSize);
 
         return $this->sendResponse($result);
     }

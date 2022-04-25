@@ -56,9 +56,10 @@ class DependencyController extends ApiController
      */
     public function show(string $id): JsonResponse
     {
-        $dependency = Dependency::findOrFail($id)->name;
-
-        return $this->sendResponse(['name' => $dependency]);
+        /*
+         * $dependency = Dependency::findOrFail($id)->name;
+         * return $this->sendResponse(['name' => $dependency]);
+        */
     }
 
     /**
