@@ -16,8 +16,8 @@ class CreateEventsTable extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->string('title');
             $table->date('startDate');
-            $table->foreign('dependency')->references('id')->on('dependencies');
-            $table->foreign('event_type')->references('id')->on('event_types');
+            $table->foreign('dependency')->references('_id')->on('dependencies');
+            $table->foreign('event_type')->references('_id')->on('event_types');
             $table->json('eventTypeFields');
             $table->json('additionalFields');
             $table->json('agreements');

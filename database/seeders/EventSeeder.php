@@ -20,8 +20,8 @@ class EventSeeder extends Seeder
     {
         Event::create([
             'title' => 'Consejo de Facultad #24',
-            'startDate' => new DateTime('17-02-2021'),
-            'dependency' => Dependency::all()->random()->id,
+            'startDate' => '17-02-2021',
+            'dependency_id' => Dependency::all()->random()->id,
             'eventType' => EventType::where('name', 'Consejo de Facultad')->first()->id,
             //'featuredImage' => 'image.png',
             'eventTypeFields' => [

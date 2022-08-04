@@ -51,7 +51,7 @@ Route::apiResources([
     'dependency' => DependencyController::class,
     'eventType' => EventTypeController::class,
     'roles' => RoleController::class,
-    //'event' => EventController::class,
+    'event' => EventController::class,
 ]);
 
 Route::post('/reset-password', function (Request $request) {
