@@ -19,10 +19,12 @@ class DependencyFactory extends Factory
      *
      * @return array
      */
-    public function definition()
+    public function definition(): array
     {
+        $dependencyName = $this->faker->unique()->word;
         return [
-            'name' => $this->faker->name,
+            'name' => $dependencyName,
+            'key' => mb_strtolower($dependencyName),
         ];
     }
 }

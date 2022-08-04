@@ -1,22 +1,18 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
-class StoreDependencyRequest extends FormRequest
+class EditUserRoleRequest extends FormRequest
 {
-    /**
-     * @var mixed
-     */
-    private $data;
-
     /**
      * Determine if the user is authorized to make this request.
      *
      * @return bool
      */
-    public function authorize(): bool
+    public function authorize()
     {
         return true;
     }
@@ -26,12 +22,11 @@ class StoreDependencyRequest extends FormRequest
      *
      * @return array
      */
-    public function rules(): array
+    public function rules()
     {
         return [
-            'data' => 'required',
-            'data.*.key' => 'required|unique:dependencies',
-            'data.*.name' => 'required'
+            'name' => 'required',
+            'key' => 'required|exists:roles,key'
         ];
     }
 }
