@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
+use Jenssegers\Mongodb\Relations\EmbedsOne;
 
 class Event extends Model
 {
@@ -12,7 +13,7 @@ class Event extends Model
     protected $fillable = [
         'title',
         'startDate',
-        'dependency',
+        'dependency_id',
         'eventType',
         'eventTypeFields',
         'additionalFields',
@@ -21,5 +22,13 @@ class Event extends Model
     ];
 
     protected $hidden = [
+        '_id',
     ];
+
+    //protected $with = ['dependency'];
+
+    public function dependency()
+    {
+        return $this->hasOne(Dependency::class);
+    }
 }
