@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Dependency;
-use App\Models\Roles;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Log;
@@ -25,14 +24,18 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        //$dependencies = Dependency::get(['key'])->project(['_id' => 0]);
+        $dependencies = Dependency::pluck('key');
+
         return [
-            'email' => $this->faker->email,
+            'email' => $this->faker->unique()->safeEmail,
+            'email_verified_at' => now(),
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
             'fullName' => $this->faker->name,
             'birthday' => $this->faker->date(),
-            'dependency' => User::all()->random()->id,
-            'role' => Role::all()->random()->id,
-            'isActive' => $this->faker->boolean,
+            'dependency' => $this->faker->randomElement($dependencies),
+            'rol' => $this->faker->word,
+            'isValid' => $this->faker->boolean,
         ];
     }
 }

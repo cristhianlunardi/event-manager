@@ -14,8 +14,8 @@ return [
     | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
-    //TODO: Choose the right path to avoid the CORS policy error, we are using '*' just for now
-    'paths' => ['api/*', '*', 'sanctum/csrf-cookie'],
+
+    'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
     'allowed_methods' => ['*'],
 
