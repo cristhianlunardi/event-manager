@@ -21,11 +21,8 @@ class EventTypeFactory extends Factory
      */
     public function definition()
     {
-        $name = $this->faker->domainName;
-
         return [
-            'name' => $name,
-            'key' => mb_strtolower($name),
+            'name' => $this->faker->name,
             'fields' => [
                 [
                     'label' => $this->faker->lexify('???????????'),

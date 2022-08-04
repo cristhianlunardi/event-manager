@@ -2,40 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Event;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreEvent;
-use const App\DEFAULT_PAGE_SIZE;
+use Illuminate\Support\Facades\Validator;
 
-class EventController extends ApiController
+class EventController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
-        $this->middleware('isValidUser', ['except' => ['index', 'show']]);
-        // $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
-
-        // Privileges
-        $this->middleware('isSecretary', ['only' => ['store']]);
-        $this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
-    }
-
     /**
      * Display a listing of the resource.
-     * @param Request $request
-     * @return JsonResponse
+     *
+     * @return \Illuminate\Http\Response
      */
-    public function index(Request $request): JsonResponse
+    public function index()
     {
-        $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
-        //$result = Event::find('62ddecd0223e0000a7003c82')->getdependency;
-        $result = Event::collection('event')->first();
-            //select(['title', 'startDate', 'eventType', 'dependency'])->dependency;
-            //->orderBy('startDate', 'asc')
-            //->paginate($pageSize);
-
-        return $this->sendResponse($result);
+        //
     }
 
     /**

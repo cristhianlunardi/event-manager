@@ -2,232 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\User\CreateUserRequest;
-use App\Http\Requests\User\EditUserRoleRequest;
 use App\Http\Requests\User\DeleteUserRequest;
 use App\Http\Requests\User\RegisterUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Models\Dependency;
-use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use stdClass;
 
 class UserController extends ApiController
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['register']]);
-        $this->middleware('isValidUser', ['except' => ['register']]);
-
-        $this->middleware('keyLowercase', ['only' => ['editRole']]);
-        $this->middleware('emailLowercase', ['only' => ['register', 'createUser', 'update', 'updateUser']]);
-        $this->middleware('isCoordinator', ['only' => ['getUsers', 'updateUser', 'editRole', 'destroyUser', 'createUser']]);
-    }
-
     public function register(RegisterUserRequest $request): JsonResponse
     {
-        $newUser = User::create(['email' => mb_strtolower($request->email)]);
+        $newUser = new User();
         $newUser->fill($request->validated());
-        $newUser->isActive = true;
-        $this->assignRole($newUser);
-        $this->assignDependency($newUser);
-        $token = $newUser->createToken("EventManager")->accessToken;
+        $newUser->isValid = true;
         $newUser->save();
-
-        // Just to view the actual Role Name and Dependency in the response (instead of id)
-        $this->prepareUserResponse($newUser);
+        $token = $newUser->createToken("EventManager")->accessToken;
 
         return $this->sendResponse(array_merge(["token"=>$token], $newUser->toArray()));
     }
 
-    public function createUser(CreateUserRequest $request): JsonResponse
-    {
-        $newUser = User::create(['email' => mb_strtolower($request->email)]);
-        $newUser->fill($request->validated());
-        $newUser->isActive = true;
-        $newUser->dependency = Dependency::where('name', $request->dependency)->first()->id;;
-        $newUser->role = Role::where('name', $request->role)->first()->id;;
-        $newUser->save();
-
-        return $this->sendResponse($newUser->toArray());
-    }
-
     public function getUsers(): JsonResponse
     {
-        $data = User::whereNotNull('email')->orderBy('fullName', 'asc')->get();
-
-        foreach ($data as $user)
-        {
-            $this->prepareUserResponse($user);
-        }
+        $data = User::all();
 
         return $this->sendResponse($data);
     }
 
-    public function destroyUser(DeleteUserRequest $request, $targetEmail): JsonResponse
+    public function destroyUser(DeleteUserRequest $request): JsonResponse
     {
-        $content = $this->findUserByEmail($targetEmail);
+        $user = User::where('email', Auth::user()->email)->first();
 
-        if (!$content->success)
-        {
-            return $this->sendError(404, 'There is no User registered with that email ('.$request->email.').', ['email' => 'No user found with the given email.']);
-        }
+        if ($user == null) return $this->sendError(404);
+        if (Hash::check($request->password, $user->password)) return $this->sendError(403, "The given credentials doesn't match.");
 
-        if (Hash::check($request->password, Auth::user()->password) == false)
-        {
-            return $this->sendError(403, "The password is incorrect.");
-        }
-
-        $user = $content->user;
         $user->isActive = false;
-        $user->save();
-
         return $this->sendResponse();
     }
 
     public function selfUser(): JsonResponse
     {
         $user = Auth::user();
-        $user = User::find($user['_id']);
-
-        // Should not generates error since there's a middleware verifying a user is logged in
-        if ($user == null) return $this->sendError(404);
-
-        $user = $this->prepareUserResponse($user);
+        if (!$user['isActive']) return $this->sendError(403, "The user is disabled.");
 
         return $this->sendResponse($user);
     }
 
-    public function destroy(DeleteUserRequest $request): JsonResponse
+    public function updateUser(UpdateUserRequest $request): JsonResponse
     {
-        // selfDestroy
         $user = User::where('email', Auth::user()->email)->first();
-
-        if ($user == null) return $this->sendError(404);
-        if (Hash::check($request->password, $user->password) == false)
-        {
-            return $this->sendError(403, "The password is incorrect.");
-        }
-
-        $user->isActive = false;
-        $user->save();
-
-        return $this->sendResponse();
-    }
-
-    public function update(UpdateUserRequest $request): JsonResponse
-    {
-        return $this->updateUser($request, Auth::user()->email);
-    }
-
-    public function updateUser(UpdateUserRequest $request, $targetEmail): JsonResponse
-    {
-        $content = $this->findUserByEmail($targetEmail);
-
-        if (!$content->success)
-        {
-            return $this->sendError(404, 'There is no User registered with that email ('.$request->email.').', ['email' => 'No user found with the given email.']);
-        }
-
-        $user = $content->user;
-
         $user->fill($request->validated());
-        if ($request->dependency)
-        {
-            $user ->dependency = Dependency::where('name', $request->dependency)->first()->id;;
-        }
-
-        $user->save();
-        $this->prepareUserResponse($user);
-
-        return $this->sendResponse($user);
-    }
-
-    public function editRole(EditUserRoleRequest $request, $targetEmail): JsonResponse
-    {
-        $user = User::where('email', $targetEmail)->first();
-
-        if (empty($user))
-        {
-            return $this->sendError(404, 'There is no User registered with that email ('.$targetEmail.').', ['email' => 'No user found with the given email.']);
-        }
-
-        $this->assignRole($user, mb_strtolower($request->name));
         $user->save();
 
-        $this->prepareUserResponse($user);
-
         return $this->sendResponse($user);
-    }
-
-    private function prepareUserResponse(User $user): User
-    {
-        $mustSave = false;
-
-        $role = Role::where('_id', $user->role)->first();
-        if ($role)
-        {
-            $user->role = $role->name;
-        } else {
-            $this->assignRole($user);
-            $mustSave = true;
-        }
-
-        $dependency = Dependency::where('_id', $user->dependency)->first();
-        if ($dependency)
-        {
-            $user->dependency = $dependency->name;
-        } else {
-            $this->assignDependency($user);
-            $mustSave = true;
-        }
-
-        if ($mustSave) {
-            $user->save();
-        }
-
-        return $user;
-    }
-
-    private function assignRole(User $user, $roleKey = 'estándar'): User
-    {
-        $role = Role::where('key', $roleKey)->first();
-
-        if ($role) {
-            $user->role = $role->id;
-        }
-
-        return $user;
-    }
-
-    private function assignDependency(User $user, $dependencyKey = 'sin dependencia')
-    {
-        $dependency = Dependency::where('key', $dependencyKey)->first();
-
-        if ($dependency) {
-            $user->dependency = $dependency->id;
-        }
-
-        return $user;
-    }
-
-    private function findUserByEmail($email)
-    {
-        $result = new stdClass();
-
-        $user = User::where('email', $email)->first();
-        if (empty($user))
-        {
-            $result->success = false;
-            return $result;
-        }
-
-        $result->user = $user;
-        $result->success = true;
-
-        return $result;
     }
 }

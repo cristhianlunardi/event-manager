@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class EventSeeder extends Seeder
+class DependenciesTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,6 +13,6 @@ class EventSeeder extends Seeder
      */
     public function run()
     {
-        //
+        \App\Models\Dependency::factory(10)->create();
     }
 }
