@@ -28,7 +28,7 @@ class StoreEvent extends FormRequest
         return [
             'title' => 'required',
             'startDate' => 'sometimes|date_format:d/m/Y',
-            'dependency' => 'sometimes|required',
+            'dependency' => 'required',
             'author' => 'sometimes|required',
             'description' => 'sometimes|required',
             'image' => 'sometimes|required|image',

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Jenssegers\Mongodb\Eloquent\Model;
-use const App\DEFAULT_NO_DEPENDENCY;
+use const App\DEFAULT_NO_DEPENDENCY_NAME;
 
 class Dependency extends Model
 {
@@ -17,21 +17,38 @@ class Dependency extends Model
 
     protected $hidden = [
         '_id',
+        'key',
+        'created_at',
+        'updated_at',
     ];
 
-    public function findById($id) : string {
-        $dependency = Dependency::where('id', $id);
+    public static function getNameFromId($id): string
+    {
+        $dependency = Dependency::where('_id', $id)->first();
 
-        if (!$dependency)
+        if (empty($dependency))
         {
-            return DEFAULT_NO_DEPENDENCY;
+            return DEFAULT_NO_DEPENDENCY_NAME;
         }
 
         return $dependency->name;
     }
 
-    public function getDefaultId() {
-        $dependency = Dependency::where('key', 'sin dependencia');
+    public static function getIdFromName($name): string
+    {
+        $dependency = Dependency::where('key', mb_strtolower($name))->first();
+
+        if (empty($dependency))
+        {
+            return Dependency::getDefaultId();
+        }
+
+        return $dependency->name;
+    }
+
+    public static function getDefaultId()
+    {
+        $dependency = Dependency::where('key', mb_strtolower(DEFAULT_NO_DEPENDENCY_NAME))->first();
 
         return $dependency->id;
     }

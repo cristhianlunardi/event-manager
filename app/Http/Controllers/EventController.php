@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Dependency;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -31,11 +32,11 @@ class EventController extends ApiController
     public function index(Request $request): JsonResponse
     {
         $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
-        //$result = Event::find('62ddecd0223e0000a7003c82')->getdependency;
-        $result = Event::collection('event')->first();
-            //select(['title', 'startDate', 'eventType', 'dependency'])->dependency;
-            //->orderBy('startDate', 'asc')
-            //->paginate($pageSize);
+        $result = Event::whereNotNull('title')->orderBy('startDate', 'desc')->paginate($pageSize);
+
+        foreach ($result as $event) {
+            $this->prepareEventResponse($event);
+        }
 
         return $this->sendResponse($result);
     }
@@ -48,15 +49,24 @@ class EventController extends ApiController
      */
     public function store(StoreEvent $request): JsonResponse
     {
-        $event = Event::create($request->validated());
-        //print($request->file('image'));
-        $imageUrl = $request->file('image')->store('public/eventImages');
-        $imageUrl = Storage::url($imageUrl);
+        $myEvent = new Event($request->validated());
+        if ($myEvent->image) {
+            $imageUrl = $request->file('image')->store('public/eventImages');
+            $imageUrl = Storage::url($imageUrl);
+            $myEvent->image = $imageUrl;
+        }
 
-        $event->image = $imageUrl;
-        $event->save();
+        $dependency = Dependency::where('key', mb_strtolower($request->dependency))->first();
+        if ($dependency) {
+            $dependencyId = $dependency->_id;
+            $myEvent->dependency = $dependencyId;
+        }
 
-        return $this->sendResponse($event);
+        $myEvent->save();
+
+        $myEvent->dependency = $dependency->name;
+
+        return $this->sendResponse($myEvent);
     }
 
     /**
@@ -91,5 +101,18 @@ class EventController extends ApiController
     public function destroy($id)
     {
         //
+    }
+
+    private function prepareEventResponse(Event $event): Event
+    {
+        $event->dependency = Dependency::getNameFromId($event->dependency);
+
+        return $event;
+    }
+
+    private function prepareEventToSave(Event $event): Event {
+        $event->dependency = Dependency::getIdFromName($event->dependency);
+
+        return $event;
     }
 }

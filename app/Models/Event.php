@@ -13,7 +13,7 @@ class Event extends Model
     protected $fillable = [
         'title',
         'startDate',
-        'dependency_id',
+        'dependency',
         'author',
         'description',
         'image',
@@ -27,11 +27,4 @@ class Event extends Model
     protected $hidden = [
         '_id',
     ];
-
-    //protected $with = ['dependency'];
-
-    public function dependency()
-    {
-        return $this->hasOne(Dependency::class);
-    }
 }
