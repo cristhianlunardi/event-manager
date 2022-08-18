@@ -6,19 +6,21 @@ use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreEvent;
+use Illuminate\Support\Facades\Storage;
+
 use const App\DEFAULT_PAGE_SIZE;
 
 class EventController extends ApiController
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['index', 'show']]);
-        $this->middleware('isValidUser', ['except' => ['index', 'show']]);
+        //$this->middleware('auth:api', ['except' => ['index', 'show']]);
+        //$this->middleware('isValidUser', ['except' => ['index', 'show']]);
         // $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
-        $this->middleware('isSecretary', ['only' => ['store']]);
-        $this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
+        //$this->middleware('isSecretary', ['only' => ['store']]);
+        //$this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
     }
 
     /**
@@ -41,39 +43,20 @@ class EventController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreEvent $request
+     * @return JsonResponse
      */
-    public function store(StoreEvent $request)
+    public function store(StoreEvent $request): JsonResponse
     {
-        echo $request;
-        /*$validated = $request->validate([
-            'data' => 'required',
-        ]);*/
+        $event = Event::create($request->validated());
+        //print($request->file('image'));
+        $imageUrl = $request->file('image')->store('public/eventImages');
+        $imageUrl = Storage::url($imageUrl);
 
-        /*foreach ($request->data as $element)
-        {
-            $element->validate([
-                "title"  => "required",
-                "dependency"  => "required",
-                "eventType"  => "required",
-            ]);
-        }*/
+        $event->image = $imageUrl;
+        $event->save();
 
-        //echo $request->data;
-
-        /*$data = $request->validate([
-            "data.*.title"  => "required",
-            "data.*.dependency"  => "required",
-            "data.*.eventType"  => "required",
-        ]);*/
-
-        /*$validator = Validator::make($request->data->all(), [
-            'dependency' => 'required',
-            'eventType' => 'required',
-        ]);*/
-
-        //print_r($data);
+        return $this->sendResponse($event);
     }
 
     /**
@@ -90,7 +73,7 @@ class EventController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param Request $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */

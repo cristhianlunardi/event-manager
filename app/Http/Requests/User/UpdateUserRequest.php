@@ -31,7 +31,7 @@ class UpdateUserRequest extends FormRequest
             'old_password' => ['sometimes', 'required', 'min:6', new ValidCurrentUserPassword()],
             'password'  => 'required_with:old_password|min:6|different:current_password|confirmed',
             'fullName'  => 'sometimes',
-            'birthday'  => 'sometimes|date',
+            'birthday'  => 'sometimes|date_format:d/m/Y',
             'dependency'  => 'sometimes|exists:dependencies,name',
             'isActive' => 'sometimes|Boolean',
         ];

@@ -26,10 +26,17 @@ class StoreEvent extends FormRequest
     {
 
         return [
-            "data" => "required",
-            "data.*.title"  => "required",
-            "data.*.dependency"  => "required",
-            "data.*.eventType"  => "required",
+            'title' => 'required',
+            'startDate' => 'sometimes|date_format:d/m/Y',
+            'dependency' => 'sometimes|required',
+            'author' => 'sometimes|required',
+            'description' => 'sometimes|required',
+            'image' => 'sometimes|required|image',
+            'eventType' => 'sometimes|required',
+            'eventTypeFields' => 'sometimes|required',
+            'additionalFields' => 'sometimes|required',
+            'agreements' => 'sometimes|required',
+            'participants' => 'sometimes|required',
         ];
     }
 }
