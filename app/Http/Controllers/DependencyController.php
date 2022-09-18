@@ -56,6 +56,8 @@ class DependencyController extends ApiController
      */
     public function show(string $id): JsonResponse
     {
+        // There is no reason to request dependencies with its names
+        // Neither using dependency id (since front-end hav not access to them)
         /*
          * $dependency = Dependency::findOrFail($id)->name;
          * return $this->sendResponse(['name' => $dependency]);

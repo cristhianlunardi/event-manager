@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Event\UpdateEventRequest;
 use App\Models\Dependency;
 use App\Models\Event;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Http\Requests\StoreEvent;
+use App\Http\Requests\Event\StoreEventRequest;
 use Illuminate\Support\Facades\Storage;
 
 use const App\DEFAULT_PAGE_SIZE;
@@ -44,10 +45,10 @@ class EventController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param StoreEvent $request
+     * @param StoreEventRequest $request
      * @return JsonResponse
      */
-    public function store(StoreEvent $request): JsonResponse
+    public function store(StoreEventRequest $request): JsonResponse
     {
         $myEvent = new Event($request->validated());
         if ($myEvent->image) {
@@ -56,15 +57,9 @@ class EventController extends ApiController
             $myEvent->image = $imageUrl;
         }
 
-        $dependency = Dependency::where('key', mb_strtolower($request->dependency))->first();
-        if ($dependency) {
-            $dependencyId = $dependency->_id;
-            $myEvent->dependency = $dependencyId;
-        }
-
+        $this->prepareEventToSave($myEvent);
         $myEvent->save();
-
-        $myEvent->dependency = $dependency->name;
+        $this->prepareEventResponse($myEvent);
 
         return $this->sendResponse($myEvent);
     }
@@ -73,11 +68,20 @@ class EventController extends ApiController
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function show($id)
     {
-        //
+        $event = Event::where('_id', $id)->first();
+
+        if (empty($event))
+        {
+            return $this->sendError(404, $this->getNotFoundMessage());
+        }
+
+        $this->prepareEventResponse($event);
+
+        return $event;
     }
 
     /**
@@ -85,22 +89,52 @@ class EventController extends ApiController
      *
      * @param Request $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
-    public function update(Request $request, $id)
+    public function update(UpdateEventRequest $request, $id)
     {
-        //
+        $event = Event::where('_id', $id)->first();
+
+        if (empty($event))
+        {
+            return $this->sendError(404, $this->getNotFoundMessage());
+        }
+
+        $event->fill($request->validated());
+        if ($request->dependency)
+        {
+            $event->dependency = Dependency::getIdFromName($request->dependency);
+        }
+
+        if ($request->image)
+        {
+            $imageUrl = $request->file('image')->store('public/eventImages');
+            $imageUrl = Storage::url($imageUrl);
+            $event->image = $imageUrl;
+        }
+
+        $event->save();
+        $this->prepareEventResponse($event);
+
+        return $event;
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function destroy($id)
     {
-        //
+        $event = Event::where('_id', $id)->delete();
+
+        if (empty($event))
+        {
+            return $this->sendError(404, $this->getNotFoundMessage());
+        }
+
+        return $this->sendResponse();
     }
 
     private function prepareEventResponse(Event $event): Event
@@ -114,5 +148,10 @@ class EventController extends ApiController
         $event->dependency = Dependency::getIdFromName($event->dependency);
 
         return $event;
+    }
+
+    private function getNotFoundMessage()
+    {
+        return 'The Event was not found.';
     }
 }

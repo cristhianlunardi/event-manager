@@ -32,12 +32,10 @@ class UserController extends ApiController
         $newUser = User::create(['email' => mb_strtolower($request->email)]);
         $newUser->fill($request->validated());
         $newUser->isActive = true;
-        $this->assignRole($newUser);
-        $this->assignDependency($newUser);
+        $this->prepareUserToSave($newUser);
         $token = $newUser->createToken("EventManager")->accessToken;
         $newUser->save();
 
-        // Just to view the actual Role Name and Dependency in the response (instead of id)
         $this->prepareUserResponse($newUser);
 
         return $this->sendResponse(array_merge(["token"=>$token], $newUser->toArray()));
@@ -48,9 +46,10 @@ class UserController extends ApiController
         $newUser = User::create(['email' => mb_strtolower($request->email)]);
         $newUser->fill($request->validated());
         $newUser->isActive = true;
-        $newUser->dependency = Dependency::where('name', $request->dependency)->first()->id;;
-        $newUser->role = Role::where('name', $request->role)->first()->id;;
+        $this->prepareUserToSave($newUser);
         $newUser->save();
+
+        $this->prepareUserResponse($newUser);
 
         return $this->sendResponse($newUser->toArray());
     }
@@ -137,7 +136,7 @@ class UserController extends ApiController
         $user->fill($request->validated());
         if ($request->dependency)
         {
-            $user ->dependency = Dependency::where('name', $request->dependency)->first()->id;;
+            $user->dependency = Dependency::where('name', $request->dependency)->first()->id;;
         }
 
         $user->save();
@@ -148,14 +147,16 @@ class UserController extends ApiController
 
     public function editRole(EditUserRoleRequest $request, $targetEmail): JsonResponse
     {
-        $user = User::where('email', $targetEmail)->first();
+        $content = $this->findUserByEmail($targetEmail);
 
-        if (empty($user))
+        if (!$content->success)
         {
             return $this->sendError(404, 'There is no User registered with that email ('.$targetEmail.').', ['email' => 'No user found with the given email.']);
         }
 
-        $this->assignRole($user, mb_strtolower($request->name));
+        $user = $content->user;
+
+        $user->role = Role::getIdFromName($request->name);
         $user->save();
 
         $this->prepareUserResponse($user);
@@ -165,51 +166,15 @@ class UserController extends ApiController
 
     private function prepareUserResponse(User $user): User
     {
-        $mustSave = false;
-
-        $role = Role::where('_id', $user->role)->first();
-        if ($role)
-        {
-            $user->role = $role->name;
-        } else {
-            $this->assignRole($user);
-            $mustSave = true;
-        }
-
-        $dependency = Dependency::where('_id', $user->dependency)->first();
-        if ($dependency)
-        {
-            $user->dependency = $dependency->name;
-        } else {
-            $this->assignDependency($user);
-            $mustSave = true;
-        }
-
-        if ($mustSave) {
-            $user->save();
-        }
+        $user->role = Role::getNameFromId($user->role);
+        $user->dependency = Dependency::getNameFromId($user->dependency);
 
         return $user;
     }
 
-    private function assignRole(User $user, $roleKey = 'estándar'): User
-    {
-        $role = Role::where('key', $roleKey)->first();
-
-        if ($role) {
-            $user->role = $role->id;
-        }
-
-        return $user;
-    }
-
-    private function assignDependency(User $user, $dependencyKey = 'sin dependencia')
-    {
-        $dependency = Dependency::where('key', $dependencyKey)->first();
-
-        if ($dependency) {
-            $user->dependency = $dependency->id;
-        }
+    private function prepareUserToSave(User $user): User {
+        $user->role = Role::getIdFromName($user->role);
+        $user->dependency = Dependency::getIdFromName($user->dependency);
 
         return $user;
     }

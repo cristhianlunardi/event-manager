@@ -25,6 +25,5 @@ class Event extends Model
     ];
 
     protected $hidden = [
-        '_id',
     ];
 }

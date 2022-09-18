@@ -52,9 +52,12 @@ class RoleController extends ApiController
      */
     public function show(string $id): JsonResponse
     {
-        $role = Role::findOrFail($id)->name;
+        // There is no reason to request roles with its names
+        // Neither using role id (since front-end hav not access to them)
 
-        return $this->sendResponse(['name' => $role]);
+        //$role = Role::findOrFail($id)->name;
+
+        //return $this->sendResponse(['name' => $role]);
     }
 
     /**

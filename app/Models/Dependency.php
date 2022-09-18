@@ -43,7 +43,7 @@ class Dependency extends Model
             return Dependency::getDefaultId();
         }
 
-        return $dependency->name;
+        return $dependency->id;
     }
 
     public static function getDefaultId()

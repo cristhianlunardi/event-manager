@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Event;
 
+use App\Models\Dependency;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Validator;
 
-class StoreEvent extends FormRequest
+class UpdateEventRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +24,11 @@ class StoreEvent extends FormRequest
      */
     public function rules()
     {
-
         return [
-            'title' => 'required',
+            'title' => 'sometimes|required',
             'startDate' => 'sometimes|date_format:d/m/Y',
-            'dependency' => 'required',
+            //'dependency'  => 'sometimes|exists:dependencies,name',
+            'dependency'  => 'sometimes|required',
             'author' => 'sometimes|required',
             'description' => 'sometimes|required',
             'image' => 'sometimes|required|image',
