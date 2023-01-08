@@ -7,6 +7,7 @@ use App\Http\Requests\Dependency\StoreDependencyRequest;
 use App\Models\Dependency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use MongoDB\BSON\Regex;
 use const App\DEFAULT_PAGE_SIZE;
 
 class DependencyController extends ApiController
@@ -30,7 +31,17 @@ class DependencyController extends ApiController
     public function index(Request $request): JsonResponse
     {
         $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
-        $result = Dependency::whereNotNull('name')->select(['name'])->orderBy('name', 'asc')->paginate($pageSize);
+        $result = Dependency::whereNotNull('name');
+
+        $queryName = $request->query('name');
+
+        if ($queryName) {
+            echo("inside");
+            $myReg = new Regex('(?:.+)?'.$queryName.'(?:.+)?', 'mig');
+            $result = $result->where('name', 'regexp', $myReg);
+        }
+
+        $result = $result->select(['name'])->orderBy('name', 'asc')->paginate($pageSize);
 
         return $this->sendResponse($result);
     }
@@ -51,17 +62,17 @@ class DependencyController extends ApiController
     /**
      * Display the specified resource.
      *
-     * @param string $id
+     * @param string $queryParam
+     * @param Request $request
      * @return JsonResponse
      */
-    public function show(string $id): JsonResponse
+    public function show(string $queryParam, Request $request): JsonResponse
     {
-        // There is no reason to request dependencies with its names
-        // Neither using dependency id (since front-end hav not access to them)
-        /*
-         * $dependency = Dependency::findOrFail($id)->name;
-         * return $this->sendResponse(['name' => $dependency]);
-        */
+        $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
+        $myReg = new Regex('(?:.+)?'.$queryParam);
+        $result = Dependency::whereNotNull('name')->where('name', 'regexp', $myReg)->select(['name'])->orderBy('name', 'asc')->paginate($pageSize);
+
+        return $this->sendResponse($result);
     }
 
     /**
