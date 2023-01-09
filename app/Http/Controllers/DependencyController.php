@@ -36,7 +36,6 @@ class DependencyController extends ApiController
         $queryName = $request->query('name');
 
         if ($queryName) {
-            echo("inside");
             $myReg = new Regex('(?:.+)?'.$queryName.'(?:.+)?', 'mig');
             $result = $result->where('name', 'regexp', $myReg);
         }
