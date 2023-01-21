@@ -33,6 +33,8 @@ Route::prefix('users')->group(function()
 
     Route::middleware(['auth', 'isValidUser'])->group(function()
     {
+
+        Route::get('verify-token', [UserController::class, 'verifyToken']);
         Route::get('/', [UserController::class, 'getUsers']);
         Route::get('me', [UserController::class, 'selfUser']);
         Route::delete('delete', [UserController::class, 'destroy']);

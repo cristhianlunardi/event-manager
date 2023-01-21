@@ -66,6 +66,16 @@ class UserController extends ApiController
         return $this->sendResponse($data);
     }
 
+    /**
+     * Verify if the token is available or expired (401 for expired)
+     *
+     * @return JsonResponse
+     */
+    public function verifyToken(): JsonResponse
+    {
+        return $this->sendResponse();
+    }
+
     public function destroyUser(DeleteUserRequest $request, $targetEmail): JsonResponse
     {
         $content = $this->findUserByEmail($targetEmail);
