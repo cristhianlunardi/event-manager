@@ -16,7 +16,6 @@ class Dependency extends Model
     ];
 
     protected $hidden = [
-        '_id',
         'key',
         'created_at',
         'updated_at',
@@ -51,5 +50,11 @@ class Dependency extends Model
         $dependency = Dependency::where('key', mb_strtolower(DEFAULT_NO_DEPENDENCY_NAME))->first();
 
         return $dependency->id;
+    }
+
+    public static function getUserDependencies($user) {
+        $dependencies = Dependency::whereIn('_id', $user->dependencies)->get();
+
+        return $dependencies;
     }
 }

@@ -14,11 +14,34 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        Role::create(['name' => 'Admin', 'key' => 'admin']);
-        Role::create(['name' => 'Decano', 'key' => 'decano']);
-        Role::create(['name' => 'Coordinador', 'key' => 'coordinador']);
-        Role::create(['name' => 'Profesor', 'key' => 'profesor']);
-        Role::create(['name' => 'Secretaria', 'key' => 'secretaria']);
-        Role::create(['name' => 'Estándar', 'key' => 'estándar']);
+        Role::create([
+            'name' => 'Admin', 'key' => 'admin',
+            'permissions' => ['create_dependency', 'read_dependency', 'update_dependency', 'delete_dependency']
+        ]);
+        Role::create([
+            'name' => 'Decano', 'key' => 'decano',
+            'permissions' => ['create_dependency', 'read_dependency', 'update_dependency', 'delete_dependency']
+        ]);
+        Role::create([
+            'name' => 'Coordinador', 'key' => 'coordinador',
+            'permissions' => ['create_dependency', 'read_dependency', 'update_dependency', 'delete_dependency']
+        ]);
+        Role::create([
+            'name' => 'Profesor', 'key' => 'profesor',
+            'permissions' => ['create_dependency', 'read_dependency', 'update_dependency']
+        ]);
+        Role::create([
+            'name' => 'Secretaria', 'key' => 'secretaria',
+            'permissions' => ['create_dependency', 'read_dependency']
+        ]);
+        Role::create([
+            'name' => 'Estándar', 'key' => 'estándar',
+            'permissions' => ['read_dependency']
+        ]);
     }
+
+    /* All Permissions
+     * 'create_dependency', 'read_dependency', 'update_dependency', 'delete_dependency'
+     * 'create_user', 'read_user', 'update_user', 'delete_user'
+     */
 }

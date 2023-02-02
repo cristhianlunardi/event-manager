@@ -13,6 +13,7 @@ class Role extends Model
     protected $fillable = [
         'name',
         'key',
+        'permissions',
     ];
 
     protected $hidden = [
@@ -51,5 +52,9 @@ class Role extends Model
         $role = Role::where('key', mb_strtolower(DEFAULT_NO_ROLE_NAME))->first();
 
         return $role->id;
+    }
+
+    public static function getRolePermissions($user) {
+        return Role::where('_id', $user->role)->get();
     }
 }

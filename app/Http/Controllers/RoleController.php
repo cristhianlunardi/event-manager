@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Role\StoreRoleRequest;
 use App\Http\Requests\Role\UpdateRoleRequest;
+use App\Models\Dependency;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class RoleController extends ApiController
 {
@@ -23,11 +25,11 @@ class RoleController extends ApiController
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
-        $result = Role::whereNotNull('name')->orderBy('name', 'asc')->get(['name']);
+        $result = Role::whereNotNull('name')->orderBy('name', 'asc')->get();
 
         return $this->sendResponse($result);
     }
@@ -35,8 +37,8 @@ class RoleController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param  StoreRoleRequest  $request
+     * @return JsonResponse
      */
     public function store(StoreRoleRequest $request): JsonResponse
     {
@@ -97,5 +99,19 @@ class RoleController extends ApiController
         }
 
         return $this->sendResponse();
+    }
+
+    /**
+     * Return all the permissions for the current User.
+     *
+     * @return JsonResponse
+     */
+    public function getMyPermissions(): JsonResponse
+    {
+        $currentUser = Auth::user();
+        $permissions = Role::getRolePermissions($currentUser);
+        $userDependencies = Dependency::getUserDependencies($currentUser);
+
+        return $this->sendResponse(['permissions' => $permissions, 'dependencies' => $userDependencies]);
     }
 }

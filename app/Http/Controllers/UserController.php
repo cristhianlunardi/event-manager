@@ -177,7 +177,8 @@ class UserController extends ApiController
     private function prepareUserResponse(User $user): User
     {
         $user->role = Role::getNameFromId($user->role);
-        $user->dependency = Dependency::getNameFromId($user->dependency);
+        //$user->dependency = Dependency::getNameFromId($user->dependency);
+        $user->dependencies = Dependency::whereIn('_id', $user->dependencies)->get();
 
         return $user;
     }

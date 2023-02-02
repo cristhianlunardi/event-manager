@@ -37,6 +37,7 @@ Route::prefix('users')->group(function()
         Route::get('verify-token', [UserController::class, 'verifyToken']);
         Route::get('/', [UserController::class, 'getUsers']);
         Route::get('me', [UserController::class, 'selfUser']);
+        Route::get('/me/permissions', [RoleController::class, 'getMyPermissions']);
         Route::delete('delete', [UserController::class, 'destroy']);
         Route::delete('delete/{targetEmail}', [UserController::class, 'destroyUser']);
         Route::put('update', [UserController::class, 'update']);
