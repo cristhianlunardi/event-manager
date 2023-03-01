@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CreateUserWithRoleRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\EditUserRoleRequest;
 use App\Http\Requests\User\DeleteUserRequest;
@@ -25,6 +26,8 @@ class UserController extends ApiController
         $this->middleware('keyLowercase', ['only' => ['editRole']]);
         $this->middleware('emailLowercase', ['only' => ['register', 'createUser', 'update', 'updateUser']]);
         $this->middleware('isCoordinator', ['only' => ['getUsers', 'updateUser', 'editRole', 'destroyUser', 'createUser']]);
+
+        $this->middleware('checkPermission:create_user_with_role', ['only' => ['createUserWithRole']]);
     }
 
     public function register(RegisterUserRequest $request): JsonResponse
@@ -52,6 +55,15 @@ class UserController extends ApiController
         $this->prepareUserResponse($newUser);
 
         return $this->sendResponse($newUser->toArray());
+    }
+
+    public function createUserWithRole(CreateUserWithRoleRequest $request): JsonResponse
+    {
+        echo $request->role;
+        echo Role::where('_id', Auth::user()->role)->first()->name;
+        echo "hello world";
+
+        //return $this->sendResponse();
     }
 
     public function getUsers(): JsonResponse

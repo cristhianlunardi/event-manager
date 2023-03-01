@@ -53,8 +53,6 @@ class Dependency extends Model
     }
 
     public static function getUserDependencies($user) {
-        $dependencies = Dependency::whereIn('_id', $user->dependencies)->get();
-
-        return $dependencies;
+        return Dependency::whereIn('_id', $user->dependencies)->get();
     }
 }

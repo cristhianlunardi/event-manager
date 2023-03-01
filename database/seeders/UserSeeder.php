@@ -24,7 +24,7 @@ class UserSeeder extends Seeder
             'fullName' => 'Cristhian Lunardi',
             'birthday' => new DateTime('14-07-1995'),
             'dependencies' => [Dependency::all()->random()->id],
-            'role' => Role::all()->random()->id,
+            'role' => Role::where('name', 'Admin')->first()->id,
             'isActive' => true,
         ]);
 

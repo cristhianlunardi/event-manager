@@ -29,6 +29,7 @@ Route::prefix('users')->group(function()
 {
     Route::post('register', [UserController::class, 'register']);
     Route::post('createUser', [UserController::class, 'createUser']);
+    Route::post('createUserWithRole', [UserController::class, 'createUserWithRole']);
     Route::patch('role/{email}', [UserController::class, 'editRole']);
 
     Route::middleware(['auth', 'isValidUser'])->group(function()

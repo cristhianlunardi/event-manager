@@ -53,9 +53,9 @@ class DependencyController extends ApiController
      */
     public function store(StoreDependencyRequest $request): JsonResponse
     {
-        $newDependency = Dependency::create($request->validated())->name;
+        $newDependency = Dependency::create($request->validated());
 
-        return $this->sendResponse(['name' => $newDependency]);
+        return $this->sendResponse([$newDependency]);
     }
 
     /**
