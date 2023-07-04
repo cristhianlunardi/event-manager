@@ -30,4 +30,15 @@ class ApiController extends Controller
 
         return response()->json($response, $code);
     }
+
+    public function sendForbiddenResponse($code = 403, $message="User is unauthorized to do this request.", $errors = []): JsonResponse
+    {
+        $response = [
+            'success' => false,
+            'message' => $message,
+            'errors' => $errors,
+        ];
+
+        return response()->json($response, $code);
+    }
 }

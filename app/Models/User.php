@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Notifications\MailResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Jenssegers\Mongodb\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
@@ -27,7 +28,6 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        '_id',
         'password',
         'remember_token',
     ];
@@ -65,5 +65,22 @@ class User extends Authenticatable
     public function sendPasswordResetNotification($token)
     {
         $this->notify(new MailResetPasswordNotification($token));
+    }
+
+    function hasPermission($permission_string): bool
+    {
+        $role = Role::getRolePermissions($this);
+
+        if ($role)
+        {
+            $permissions = $role->permissions;
+
+            if (in_array($permission_string, $permissions))
+            {
+                return True;
+            }
+        }
+
+        return False;
     }
 }

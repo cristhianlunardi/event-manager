@@ -46,13 +46,19 @@ class UserController extends ApiController
 
     public function createUser(CreateUserRequest $request): JsonResponse
     {
-        $newUser = User::create(['email' => mb_strtolower($request->email)]);
-        $newUser->fill($request->validated());
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('create_user');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array("create_user" => "False"));
+        }
+
+        $newUser = User::create($request->validated());
         $newUser->isActive = true;
+
         $this->prepareUserToSave($newUser);
         $newUser->save();
-
-        $this->prepareUserResponse($newUser);
 
         return $this->sendResponse($newUser->toArray());
     }
@@ -111,9 +117,18 @@ class UserController extends ApiController
 
     public function selfUser(): JsonResponse
     {
+        print("hello world");
         $user = Auth::user();
-        $user = User::find($user['_id']);
 
+        $roleId =$user->role;
+
+        print($roleId);
+
+        $varl = $user->hasPermission('create_dependencies');
+
+        print($varl);
+
+        return $this->sendResponse($user);
         // Should not generates error since there's a middleware verifying a user is logged in
         if ($user == null) return $this->sendError(404);
 
@@ -190,14 +205,14 @@ class UserController extends ApiController
     {
         $user->role = Role::getNameFromId($user->role);
         //$user->dependency = Dependency::getNameFromId($user->dependency);
-        $user->dependencies = Dependency::whereIn('_id', $user->dependencies)->get();
+        $user->dependencies = Dependency::whereIn('_id', [$user->dependencies])->get();
 
         return $user;
     }
 
     private function prepareUserToSave(User $user): User {
         $user->role = Role::getIdFromName($user->role);
-        $user->dependency = Dependency::getIdFromName($user->dependency);
+        $user->dependency = Dependency::getDependenciesFromNames($user->dependency);
 
         return $user;
     }

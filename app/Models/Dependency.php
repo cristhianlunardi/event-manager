@@ -45,6 +45,13 @@ class Dependency extends Model
         return $dependency->id;
     }
 
+    public static function getDependenciesFromNames($dependenciesArray)
+    {
+        $result = Dependency::whereIn('name', $dependenciesArray)->get();
+
+        return $result;
+    }
+
     public static function getDefaultId()
     {
         $dependency = Dependency::where('key', mb_strtolower(DEFAULT_NO_DEPENDENCY_NAME))->first();
