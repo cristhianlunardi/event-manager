@@ -51,7 +51,7 @@ class UserController extends ApiController
 
         if (!$hasPermission)
         {
-            return $this->sendForbiddenResponse(errors: array("create_user" => "False"));
+            return $this->sendForbiddenResponse(errors: array('create_user' => 'False'));
         }
 
         $newUser = User::create($request->validated());
@@ -74,12 +74,15 @@ class UserController extends ApiController
 
     public function getUsers(): JsonResponse
     {
-        $data = User::whereNotNull('email')->orderBy('fullName', 'asc')->get();
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('view_user');
 
-        foreach ($data as $user)
+        if (!$hasPermission)
         {
-            $this->prepareUserResponse($user);
+            return $this->sendForbiddenResponse(errors: array('view_user' => 'False'));
         }
+
+        $data = User::whereNotNull('email')->orderBy('fullName', 'asc')->get();
 
         return $this->sendResponse($data);
     }
@@ -211,8 +214,8 @@ class UserController extends ApiController
     }
 
     private function prepareUserToSave(User $user): User {
-        $user->role = Role::getIdFromName($user->role);
-        $user->dependency = Dependency::getDependenciesFromNames($user->dependency);
+        $user->role = Role::getIdFromName($user->role)->toArray();
+        $user->dependency = Dependency::getDependenciesFromNames($user->dependency)->toArray();
 
         return $user;
     }

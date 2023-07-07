@@ -30,8 +30,8 @@ class CreateUserRequest extends FormRequest
             'password'  => 'required|min:6|confirmed',
             'fullName'  => 'required',
             'birthday'  => 'required|date_format:d/m/Y',
-            'dependency'  => 'required|exists:dependencies,name',
-            'role'  => 'required|exists:roles,name',
+            'dependency.*'  => 'required|exists:dependencies,name',
+            'role.*'  => 'required|exists:roles,name',
         ];
     }
 }

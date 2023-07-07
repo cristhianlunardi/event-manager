@@ -17,6 +17,7 @@ class Role extends Model
     ];
 
     protected $hidden = [
+        'key',
         'updated_at',
         'created_at',
     ];
@@ -33,9 +34,9 @@ class Role extends Model
         return $role->name;
     }
 
-    public static function getIdFromName($name)
+    public static function getIdFromName($rolesArray)
     {
-        $role = Role::where('key', mb_strtolower($name))->get();
+        $role = Role::whereIn('name', $rolesArray)->get();
         if (empty($role))
         {
             return Role::getDefaultId();
@@ -48,7 +49,7 @@ class Role extends Model
     {
         $role = Role::where('key', mb_strtolower(DEFAULT_NO_ROLE_NAME))->first();
 
-        return $role->id;
+        return $role;
     }
 
     public static function getRolePermissions($user) {

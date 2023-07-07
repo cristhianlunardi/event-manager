@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             'password' => 'c123456',
             'fullName' => 'Cristhian Lunardi',
             'birthday' => new DateTime('14-07-1995'),
-            'dependencies' => [Dependency::all()->random()->id],
+            'dependency' => [Dependency::all()->random()->id],
             'role' => Role::where('name', 'Admin')->first()->id,
             'isActive' => true,
         ]);
@@ -33,7 +33,7 @@ class UserSeeder extends Seeder
             'password' => 'c123456',
             'fullName' => 'Carlos Callañaupa',
             'birthday' => new DateTime('22-07-1994'),
-            'dependencies' => [Dependency::all()->random()->id],
+            'dependency' => [Dependency::all()->random()->id],
             'role' => Role::all()->random()->id,
             'isActive' => true,
         ]);

@@ -18,7 +18,7 @@ class RoleSeeder extends Seeder
             'name' => 'Admin', 'key' => 'admin',
             'permissions' => [
                 'create_dependency', 'read_dependency', 'update_dependency', 'delete_dependency',
-                'create_user', 'read_user', 'update_user', 'delete_user',
+                'create_user', 'view_user', 'update_user', 'delete_user',
             ]
         ]);
         Role::create([
