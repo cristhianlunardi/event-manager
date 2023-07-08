@@ -3,6 +3,7 @@
 namespace App\Http;
 
 use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\PassportClientSecretProxy;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -55,6 +56,7 @@ class Kernel extends HttpKernel
      */
     protected $routeMiddleware = [
         'auth' => \App\Http\Middleware\Authenticate::class,
+        'PassportClientSecretProxy' => PassportClientSecretProxy::class,
         'isValidUser' => \App\Http\Middleware\IsValidUser::class,
         'keyLowercase' => \App\Http\Middleware\KeyLowercase::class,
         'emailLowercase' => \App\Http\Middleware\EmailLowercase::class,

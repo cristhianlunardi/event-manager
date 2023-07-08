@@ -25,9 +25,9 @@ class UserController extends ApiController
 
         $this->middleware('keyLowercase', ['only' => ['editRole']]);
         $this->middleware('emailLowercase', ['only' => ['register', 'createUser', 'update', 'updateUser']]);
-        $this->middleware('isCoordinator', ['only' => ['getUsers', 'updateUser', 'editRole', 'destroyUser', 'createUser']]);
+        //$this->middleware('isCoordinator', ['only' => ['getUsers', 'updateUser', 'editRole', 'destroyUser', 'createUser']]);
 
-        $this->middleware('checkPermission:create_user_with_role', ['only' => ['createUserWithRole']]);
+        //$this->middleware('checkPermission:create_user_with_role', ['only' => ['createUserWithRole']]);
     }
 
     public function register(RegisterUserRequest $request): JsonResponse
@@ -82,7 +82,7 @@ class UserController extends ApiController
             return $this->sendForbiddenResponse(errors: array('view_user' => 'False'));
         }
 
-        $data = User::whereNotNull('email')->orderBy('fullName', 'asc')->get();
+        $data = $this->queryAllActiveUsers()->orderBy('fullName', 'asc')->get();
 
         return $this->sendResponse($data);
     }
@@ -99,23 +99,36 @@ class UserController extends ApiController
 
     public function destroyUser(DeleteUserRequest $request, $targetEmail): JsonResponse
     {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('delete_user');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('delete_user' => 'False'));
+        }
+
         $content = $this->findUserByEmail($targetEmail);
 
         if (!$content->success)
         {
-            return $this->sendError(404, 'There is no User registered with that email ('.$request->email.').', ['email' => 'No user found with the given email.']);
+            return $this->sendError(404, 'There is no User registered with that email ('.$targetEmail.').', ['email' => 'No user found with the given email.']);
         }
 
-        if (Hash::check($request->password, Auth::user()->password) == false)
-        {
-            return $this->sendError(403, "The password is incorrect.");
-        }
+//        if (Hash::check($request->password, Auth::user()->password) == false)
+//        {
+//            return $this->sendError(403, "The password is incorrect.");
+//        }
 
         $user = $content->user;
+        $tokens = $user->tokens;
+        foreach ($tokens as $token)
+        {
+            $token->revoke();
+        }
         $user->isActive = false;
         $user->save();
 
-        return $this->sendResponse();
+        return $this->sendResponse($tokens);
     }
 
     public function selfUser(): JsonResponse
@@ -224,7 +237,7 @@ class UserController extends ApiController
     {
         $result = new stdClass();
 
-        $user = User::where('email', $email)->first();
+        $user = User::where('email', $email)->where('isActive', true)->first();
         if (empty($user))
         {
             $result->success = false;
@@ -235,5 +248,12 @@ class UserController extends ApiController
         $result->success = true;
 
         return $result;
+    }
+
+    private function queryAllActiveUsers()
+    {
+        $users = User::whereNotNull('email')->where('isActive', true);
+
+        return $users;
     }
 }
