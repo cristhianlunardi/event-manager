@@ -32,8 +32,9 @@ class UpdateUserRequest extends FormRequest
             'password'  => 'required_with:old_password|min:6|different:current_password|confirmed',
             'fullName'  => 'sometimes',
             'birthday'  => 'sometimes|date_format:d/m/Y',
-            'dependency'  => 'sometimes|exists:dependencies,name',
             'isActive' => 'sometimes|Boolean',
+            'dependency.*'  => 'required|exists:dependencies,name',
+            'role.*'  => 'required|exists:roles,name',
         ];
     }
 }

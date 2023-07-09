@@ -69,12 +69,10 @@ class User extends Authenticatable
 
     function hasPermission($permission_string): bool
     {
-        $role = Role::getRolePermissions($this);
+        $permissions = Role::getRolesPermissions($this);
 
-        if ($role)
+        if ($permissions)
         {
-            $permissions = $role->permissions;
-
             if (in_array($permission_string, $permissions))
             {
                 return True;

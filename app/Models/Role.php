@@ -52,7 +52,17 @@ class Role extends Model
         return $role;
     }
 
-    public static function getRolePermissions($user) {
-        return Role::where('_id', $user->role)->first();
+    public static function getRolesPermissions($user) {
+        $userPermissions = array();
+
+        foreach ($user->role as $role) {
+            if (array_key_exists('permissions', $role)) {
+                $userPermissions = array_merge($userPermissions, $role['permissions']);
+            }
+        }
+
+        $userPermissions = array_unique($userPermissions);
+
+        return $userPermissions;
     }
 }

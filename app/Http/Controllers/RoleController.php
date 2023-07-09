@@ -109,9 +109,14 @@ class RoleController extends ApiController
     public function getMyPermissions(): JsonResponse
     {
         $currentUser = Auth::user();
-        $permissions = Role::getRolePermissions($currentUser);
-        $userDependencies = Dependency::getUserDependencies($currentUser);
+        $permissions = Role::getRolesPermissions($currentUser);
+        $userDependencies = $currentUser->dependency;
+        $userRoles = $currentUser->role;
 
-        return $this->sendResponse(['permissions' => $permissions, 'dependencies' => $userDependencies]);
+        return $this->sendResponse([
+            'permissions' => $permissions,
+            'dependency' => $userDependencies,
+            'role' => $userRoles,
+        ]);
     }
 }

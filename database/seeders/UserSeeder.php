@@ -7,7 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use DateTime;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Carbon;
+
 
 class UserSeeder extends Seeder
 {
@@ -22,9 +22,9 @@ class UserSeeder extends Seeder
             'email' => 'cristhian@event.com',
             'password' => 'c123456',
             'fullName' => 'Cristhian Lunardi',
-            'birthday' => new DateTime('14-07-1995'),
-            'dependency' => [Dependency::all()->random()->id],
-            'role' => Role::where('name', 'Admin')->first()->id,
+            'birthday' => new DateTime('01-01-2000'),
+            'dependency' => Dependency::all()->toArray(),
+            'role' => Role::all()->toArray(),// [Role::where('name', 'Admin')->first()->toArray()],
             'isActive' => true,
         ]);
 
@@ -32,9 +32,9 @@ class UserSeeder extends Seeder
             'email' => 'carlos@event.com',
             'password' => 'c123456',
             'fullName' => 'Carlos Callañaupa',
-            'birthday' => new DateTime('22-07-1994'),
-            'dependency' => [Dependency::all()->random()->id],
-            'role' => Role::all()->random()->id,
+            'birthday' => new DateTime('02-02-2002'),
+            'dependency' => [Dependency::all()->first()->toArray()],
+            'role' => [Role::all()->first()->toArray()],
             'isActive' => true,
         ]);
     }

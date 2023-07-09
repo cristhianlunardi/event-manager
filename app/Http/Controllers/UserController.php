@@ -87,6 +87,26 @@ class UserController extends ApiController
         return $this->sendResponse($data);
     }
 
+    public function getUser($targetEmail): JsonResponse
+    {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('view_user');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('view_user' => 'False'));
+        }
+
+        $target_user = $this->findUserByEmail($targetEmail);
+
+        if (!$target_user->success)
+        {
+            return $this->sendError(404, 'There is no User registered with that email ('.$targetEmail.').', ['email' => 'No user found with the given email.']);
+        }
+
+        return $this->sendResponse($target_user);
+    }
+
     /**
      * Verify if the token is available or expired (401 for expired)
      *
@@ -114,11 +134,6 @@ class UserController extends ApiController
             return $this->sendError(404, 'There is no User registered with that email ('.$targetEmail.').', ['email' => 'No user found with the given email.']);
         }
 
-//        if (Hash::check($request->password, Auth::user()->password) == false)
-//        {
-//            return $this->sendError(403, "The password is incorrect.");
-//        }
-
         $user = $content->user;
         $tokens = $user->tokens;
         foreach ($tokens as $token)
@@ -133,22 +148,9 @@ class UserController extends ApiController
 
     public function selfUser(): JsonResponse
     {
-        print("hello world");
         $user = Auth::user();
 
-        $roleId =$user->role;
-
-        print($roleId);
-
-        $varl = $user->hasPermission('create_dependencies');
-
-        print($varl);
-
-        return $this->sendResponse($user);
-        // Should not generates error since there's a middleware verifying a user is logged in
         if ($user == null) return $this->sendError(404);
-
-        $user = $this->prepareUserResponse($user);
 
         return $this->sendResponse($user);
     }
@@ -177,6 +179,14 @@ class UserController extends ApiController
 
     public function updateUser(UpdateUserRequest $request, $targetEmail): JsonResponse
     {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('update_user');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('update_user' => 'False'));
+        }
+
         $content = $this->findUserByEmail($targetEmail);
 
         if (!$content->success)
@@ -187,13 +197,16 @@ class UserController extends ApiController
         $user = $content->user;
 
         $user->fill($request->validated());
-        if ($request->dependency)
-        {
-            $user->dependency = Dependency::where('name', $request->dependency)->first()->id;;
+
+        if ($request->dependency) {
+            $user->dependency = Dependency::getDependenciesFromNames($user->dependency)->toArray();
+        }
+
+        if ($request->role) {
+            $user->role = Role::getIdFromName($user->role)->toArray();
         }
 
         $user->save();
-        $this->prepareUserResponse($user);
 
         return $this->sendResponse($user);
     }
@@ -237,7 +250,7 @@ class UserController extends ApiController
     {
         $result = new stdClass();
 
-        $user = User::where('email', $email)->where('isActive', true)->first();
+        $user = User::where('email', strtolower($email))->where('isActive', true)->first();
         if (empty($user))
         {
             $result->success = false;
