@@ -12,9 +12,12 @@ use App\Models\Dependency;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use MongoDB\BSON\Regex;
 use stdClass;
+use const App\DEFAULT_PAGE_SIZE;
 
 class UserController extends ApiController
 {
@@ -72,7 +75,7 @@ class UserController extends ApiController
         //return $this->sendResponse();
     }
 
-    public function getUsers(): JsonResponse
+    public function getUsers(Request $request): JsonResponse
     {
         $user = Auth::user();
         $hasPermission = $user->hasPermission('view_user');
@@ -82,9 +85,21 @@ class UserController extends ApiController
             return $this->sendForbiddenResponse(errors: array('view_user' => 'False'));
         }
 
-        $data = $this->queryAllActiveUsers()->orderBy('fullName', 'asc')->get();
+        $pageSize = (int)$request->query('page_size', DEFAULT_PAGE_SIZE);
+        $result = $this->queryAllActiveUsers();
+        $search_param = $request->query('search');
 
-        return $this->sendResponse($data);
+        if ($search_param)
+        {
+            $result = User::whereNotNull('email')->where('isActive', true)->where(function ($query) use ($search_param) {
+                print("nani kore");
+                return $query->where('email', 'like', $search_param.'%')->orWhere('fullName', 'like', $search_param.'%');
+            });
+        }
+
+        $result = $result->orderBy('fullName', 'asc')->paginate($pageSize);
+
+        return $this->sendResponse($result);
     }
 
     public function getUser($targetEmail): JsonResponse
