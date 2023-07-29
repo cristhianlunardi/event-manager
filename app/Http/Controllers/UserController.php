@@ -42,8 +42,6 @@ class UserController extends ApiController
         $token = $newUser->createToken("EventManager")->accessToken;
         $newUser->save();
 
-        $this->prepareUserResponse($newUser);
-
         return $this->sendResponse(array_merge(["token"=>$token], $newUser->toArray()));
     }
 
@@ -255,6 +253,9 @@ class UserController extends ApiController
     }
 
     private function prepareUserToSave(User $user): User {
+        if (!$user->role) {
+            $user->role = [];
+        }
         $user->role = Role::getIdFromName($user->role)->toArray();
         $user->dependency = Dependency::getDependenciesFromNames($user->dependency)->toArray();
 

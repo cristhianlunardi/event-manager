@@ -47,16 +47,26 @@ class Dependency extends Model
 
     public static function getDependenciesFromNames($dependenciesArray)
     {
-        $result = Dependency::whereIn('name', $dependenciesArray)->get();
+        $constraintValues = array();
+        if ($dependenciesArray) {
+            $constraintValues = $dependenciesArray;
+        }
+
+        $result = Dependency::whereIn('name', $constraintValues)->get();
+
+        if ($result->isEmpty())
+        {
+            return Dependency::getDefaultDependency();
+        }
 
         return $result;
     }
 
-    public static function getDefaultId()
+    public static function getDefaultDependency()
     {
         $dependency = Dependency::where('key', mb_strtolower(DEFAULT_NO_DEPENDENCY_NAME))->first();
 
-        return $dependency->id;
+        return $dependency;
     }
 
     public static function getUserDependencies($user) {

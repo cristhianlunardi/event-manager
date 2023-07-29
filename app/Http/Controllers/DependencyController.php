@@ -7,6 +7,7 @@ use App\Http\Requests\Dependency\StoreDependencyRequest;
 use App\Models\Dependency;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use MongoDB\BSON\Regex;
 use const App\DEFAULT_PAGE_SIZE;
 
@@ -103,6 +104,14 @@ class DependencyController extends ApiController
      */
     public function destroy(string $name): JsonResponse
     {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('delete_dependency');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('delete_dependency' => 'False'));
+        }
+
         $dependency = Dependency::where('name', $name)->delete();
 
         if (!$dependency)

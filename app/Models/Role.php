@@ -36,16 +36,21 @@ class Role extends Model
 
     public static function getIdFromName($rolesArray)
     {
-        $role = Role::whereIn('name', $rolesArray)->get();
-        if (empty($role))
-        {
-            return Role::getDefaultId();
+        $constraintValues = array();
+        if ($rolesArray) {
+            $constraintValues = $rolesArray;
         }
 
-        return $role;
+        $result = Role::whereIn('name', $constraintValues)->get();
+        if ($result->isEmpty())
+        {
+            return Role::getDefaultRole();
+        }
+
+        return $result;
     }
 
-    public static function getDefaultId()
+    public static function getDefaultRole()
     {
         $role = Role::where('key', mb_strtolower(DEFAULT_NO_ROLE_NAME))->first();
 

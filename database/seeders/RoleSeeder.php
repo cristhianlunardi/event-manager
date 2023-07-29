@@ -48,7 +48,7 @@ class RoleSeeder extends Seeder
             ]
         ]);
         Role::create([
-            'name' => 'Estándar', 'key' => 'estándar',
+            'name' => 'Usuario', 'key' => 'usuario',
             'permissions' => ['read_dependency']
         ]);
     }

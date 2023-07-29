@@ -15,4 +15,4 @@ const DEFAULT_PAGE_SIZE = 10;
 const BASE_URL = "http://react-my-app:8000/";
 
 const DEFAULT_NO_DEPENDENCY_NAME = "Sin dependencia";
-const DEFAULT_NO_ROLE_NAME = "Sin cargo";
+const DEFAULT_NO_ROLE_NAME = "Usuario";
