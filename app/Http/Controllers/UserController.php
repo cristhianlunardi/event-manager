@@ -90,7 +90,6 @@ class UserController extends ApiController
         if ($search_param)
         {
             $result = User::whereNotNull('email')->where('isActive', true)->where(function ($query) use ($search_param) {
-                print("nani kore");
                 return $query->where('email', 'like', $search_param.'%')->orWhere('fullName', 'like', $search_param.'%');
             });
         }
