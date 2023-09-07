@@ -20,8 +20,8 @@ class DependencyController extends ApiController
         $this->middleware('keyLowercase', ['only' => ['store', 'update']]);
 
         // Privileges
-        $this->middleware('isSecretary', ['only' => ['store']]);
-        $this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
+        // $this->middleware('isSecretary', ['only' => ['store']]);
+        // $this->middleware('isProfessor', ['only' => ['update', 'destroy']]);
     }
 
     /**
@@ -54,6 +54,14 @@ class DependencyController extends ApiController
      */
     public function store(StoreDependencyRequest $request): JsonResponse
     {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('create_dependency');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('create_dependency' => 'False'));
+        }
+
         $newDependency = Dependency::create($request->validated());
 
         return $this->sendResponse([$newDependency]);
@@ -84,6 +92,14 @@ class DependencyController extends ApiController
      */
     public function update(UpdateDependencyRequest $request, string $name): JsonResponse
     {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('update_dependency');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('update_dependency' => 'False'));
+        }
+
         $dependency = Dependency::where('name', $name)->first();
 
         if (empty($dependency))
@@ -104,6 +120,14 @@ class DependencyController extends ApiController
      */
     public function destroy(string $name): JsonResponse
     {
+        $user = Auth::user();
+        $hasPermission = $user->hasPermission('delete_dependency');
+
+        if (!$hasPermission)
+        {
+            return $this->sendForbiddenResponse(errors: array('delete_dependency' => 'False'));
+        }
+
         $user = Auth::user();
         $hasPermission = $user->hasPermission('delete_dependency');
 
