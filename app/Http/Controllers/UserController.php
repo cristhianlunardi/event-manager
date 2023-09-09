@@ -129,7 +129,7 @@ class UserController extends ApiController
         return $this->sendResponse();
     }
 
-    public function destroyUser(DeleteUserRequest $request, $targetEmail): JsonResponse
+    public function destroyUser(DeleteUserRequest $request, $userId): JsonResponse
     {
         $user = Auth::user();
         $hasPermission = $user->hasPermission('delete_user');
@@ -139,11 +139,11 @@ class UserController extends ApiController
             return $this->sendForbiddenResponse(errors: array('delete_user' => 'False'));
         }
 
-        $content = $this->findUserByEmail($targetEmail);
+        $content = $this->findUserById($userId);
 
         if (!$content->success)
         {
-            return $this->sendError(404, 'There is no User registered with that email ('.$targetEmail.').', ['email' => 'No user found with the given email.']);
+            return $this->sendError(404, 'There is no User registered with that Id ('.$userId.').', ['_id' => 'No user found with the given id.']);
         }
 
         $user = $content->user;
@@ -186,10 +186,10 @@ class UserController extends ApiController
 
     public function update(UpdateUserRequest $request): JsonResponse
     {
-        return $this->updateUser($request, Auth::user()->email);
+        return $this->updateUser($request, Auth::user()->_id);
     }
 
-    public function updateUser(UpdateUserRequest $request, $targetEmail): JsonResponse
+    public function updateUser(UpdateUserRequest $request, $userId): JsonResponse
     {
         $user = Auth::user();
         $hasPermission = $user->hasPermission('update_user');
@@ -199,11 +199,11 @@ class UserController extends ApiController
             return $this->sendForbiddenResponse(errors: array('update_user' => 'False'));
         }
 
-        $content = $this->findUserByEmail($targetEmail);
+        $content = $this->findUserById($userId);
 
         if (!$content->success)
         {
-            return $this->sendError(404, 'There is no User registered with that email ('.$request->email.').', ['email' => 'No user found with the given email.']);
+            return $this->sendError(404, 'There is no User registered with that id ('.$userId.').', ['_id' => 'No user found with the given _id.']);
         }
 
         $user = $content->user;
@@ -266,6 +266,23 @@ class UserController extends ApiController
         $result = new stdClass();
 
         $user = User::where('email', strtolower($email))->where('isActive', true)->first();
+        if (empty($user))
+        {
+            $result->success = false;
+            return $result;
+        }
+
+        $result->user = $user;
+        $result->success = true;
+
+        return $result;
+    }
+
+    private function findUserById($userId)
+    {
+        $result = new stdClass();
+
+        $user = User::where('_id', $userId)->first();
         if (empty($user))
         {
             $result->success = false;

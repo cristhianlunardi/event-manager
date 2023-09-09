@@ -43,9 +43,9 @@ Route::prefix('users')->group(function()
         Route::get('me', [UserController::class, 'selfUser']);
         Route::get('/me/permissions', [RoleController::class, 'getMyPermissions']);
         Route::delete('delete', [UserController::class, 'destroy']);
-        Route::delete('delete/{targetEmail}', [UserController::class, 'destroyUser']);
+        Route::delete('delete/{userId}', [UserController::class, 'destroyUser']);
         Route::put('update', [UserController::class, 'update']);
-        Route::patch('update/{targetEmail}', [UserController::class, 'updateUser']);
+        Route::patch('update/{userId}', [UserController::class, 'updateUser']);
         Route::get('logout', [\App\Http\Controllers\AuthController::class, 'logout']);
     });
 });
