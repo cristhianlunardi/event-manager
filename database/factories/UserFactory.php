@@ -28,11 +28,14 @@ class UserFactory extends Factory
         return [
             'email' => $this->faker->email,
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
-            'fullName' => $this->faker->name,
-            'birthday' => $this->faker->date(),
+            'full_name' => $this->faker->name,
+            'birthdate' => $this->faker->date(),
             'dependency' => User::all()->random()->id,
             'role' => Role::all()->random()->id,
             'isActive' => $this->faker->boolean,
+            'id_number' => $this->faker->randomNumber(8),
+            'rif' => $this->faker->randomNumber(9),
+            'user_type' => $this->faker->randomElement(['Persona', 'Empresa'])
         ];
     }
 }

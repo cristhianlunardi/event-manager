@@ -26,8 +26,11 @@ class RegisterUserRequest extends FormRequest
         return [
             'email'  => 'bail|required|email|unique:users,email',
             'password'  => 'required|min:6|confirmed',
-            'fullName'  => 'required',
-            'birthday'  => 'required|date_format:d/m/Y',
+            'full_name'  => 'required',
+            'birthdate'  => 'required|date_format:d/m/Y',
+            'id_number' => 'nullable',
+            'rif' => 'nullable',
+            'user_type' => 'required'
         ];
     }
 }

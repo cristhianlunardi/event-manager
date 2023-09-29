@@ -17,11 +17,14 @@ class CreateUsersTable extends Migration
             $table->primary('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('fullName');
-            $table->date('birthday');
+            $table->string('full_name');
+            $table->date('birthdate');
             $table->foreign('dependencies')->references('_id')->on('dependencies');
             $table->foreign('role')->references('_id')->on('roles');
             $table->bool('isActive');
+            $table->integer('id_number');
+            $table->integer('rif');
+            $table->string('user_type');
             //$table->timestamps();
         });
     }

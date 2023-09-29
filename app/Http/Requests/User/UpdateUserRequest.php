@@ -30,11 +30,14 @@ class UpdateUserRequest extends FormRequest
             'email' => 'bail|sometimes|email|unique:users,email,'.Auth::user()->_id.',_id',
             'old_password' => ['sometimes', 'required', 'min:6', new ValidCurrentUserPassword()],
             'password'  => 'required_with:old_password|min:6|different:current_password|confirmed',
-            'fullName'  => 'sometimes',
-            'birthday'  => 'sometimes|date_format:d/m/Y',
+            'full_name'  => 'nullable',
+            'birthdate'  => 'sometimes|date_format:d/m/Y',
             'isActive' => 'sometimes|Boolean',
             'dependency.*'  => 'required|exists:dependencies,name',
             'role.*'  => 'required|exists:roles,name',
+            'id_number' => 'nullable',
+            'rif' => 'nullable',
+            'user_type' => 'required'
         ];
     }
 }
