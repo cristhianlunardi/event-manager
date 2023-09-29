@@ -37,7 +37,7 @@ class UpdateUserRequest extends FormRequest
             'role.*'  => 'required|exists:roles,name',
             'id_number' => 'nullable',
             'rif' => 'nullable',
-            'user_type' => 'required'
+            'user_type' => 'nullable'
         ];
     }
 }
